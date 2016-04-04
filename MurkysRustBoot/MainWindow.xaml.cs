@@ -321,7 +321,6 @@ namespace MurkysRustBoot
             watcher.Path = Path.Combine(Path.GetDirectoryName(Properties.Settings.Default.Rustserverexecutable), "server", Properties.Settings.Default.Identity);
             watcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite
        | NotifyFilters.FileName | NotifyFilters.DirectoryName;
-            // Only watch text files.
             watcher.Filter = "*.txt";
             watcher.Changed += new FileSystemEventHandler(LogFilesOnChanged);
             watcher.Created += new FileSystemEventHandler(LogFilesOnChanged);
@@ -591,18 +590,7 @@ namespace MurkysRustBoot
             }
         }
 
-        private void RustBoot_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            if (e.LeftButton == System.Windows.Input.MouseButtonState.Pressed)
-            {
-                if (WindowState == WindowState.Maximized)
-                {
-                    WindowState = WindowState.Normal;
-                }
-                DragMove();
-            }
-        }
-
+        
         private void btn_Minimize_Click(object sender, RoutedEventArgs e)
         {
             WindowState = WindowState.Minimized;
@@ -652,7 +640,7 @@ namespace MurkysRustBoot
                 if (e.Source is TabControl)
                 {
                     e.Handled = true;
-                    RefreshActicatedPluginList();
+                    RefreshPluinLists();
                 }
             }
             else
@@ -663,12 +651,15 @@ namespace MurkysRustBoot
         }
 
         string PluginDirectory;
+        string DeactivatedPluginsDirectory;
         List<string> Plugins;
+        List<string> DeactivatedPlugins;
 
-        private void RefreshActicatedPluginList()
+        private void RefreshPluinLists()
         {
             var Settings = Properties.Settings.Default;
             Plugins = new List<string>();
+            DeactivatedPlugins = new List<string>();
             
             if (Settings.Identity != txt_Hostname.Text.Sanitize())
             {
@@ -681,15 +672,29 @@ namespace MurkysRustBoot
                 Settings.Identity,
                 "oxide",
                 "plugins" });
+            DeactivatedPluginsDirectory = Path.Combine(new string[] {
+                Path.GetDirectoryName(Properties.Settings.Default.Rustserverexecutable),
+                "server",
+                Settings.Identity,
+                "oxide",
+                "deactivated_plugins" });
 
             if (!Directory.Exists(PluginDirectory))
                 Directory.CreateDirectory(PluginDirectory);
+            if (!Directory.Exists(DeactivatedPluginsDirectory))
+                Directory.CreateDirectory(DeactivatedPluginsDirectory);
 
             list_Plugins.Items.Clear();
+            list_DeactivatedPlugins.Items.Clear();
             foreach (var file in Directory.GetFiles(PluginDirectory))
             {
                 Plugins.Add(Path.GetFileName(file));
                 list_Plugins.Items.Add(Path.GetFileName(file));
+            }
+            foreach (var file in Directory.GetFiles(DeactivatedPluginsDirectory))
+            {
+                DeactivatedPlugins.Add(Path.GetFileName(file));
+                list_DeactivatedPlugins.Items.Add(Path.GetFileName(file));
             }
             txt_PluginsDragMessage.Visibility = list_Plugins.Items.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
         }
@@ -718,23 +723,52 @@ namespace MurkysRustBoot
         {
             if (MessageBox.Show("Are you sure you want to delete the selected plugin(s)?","Delete selected plugins?",MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
-                foreach (var selectedPlugin in LastManipulatedListBox.SelectedItems)
+                foreach (string fileName in LastManipulatedListBox.SelectedItems)
                 {
-                    string fileName;
-                    if (selectedPlugin is TextBlock)
+                    if (LastManipulatedListBox == list_Plugins)
                     {
-                        fileName = (selectedPlugin as TextBlock).Text;
+                        if ( File.Exists( Path.Combine( PluginDirectory, fileName)))
+                        {
+                            File.Delete(Path.Combine(PluginDirectory, fileName));
+                        }
                     }
-                    else
+                    else if (LastManipulatedListBox == list_DeactivatedPlugins)
                     {
-                        fileName = selectedPlugin as string;
-                    }
-                    if ( File.Exists( Path.Combine( PluginDirectory, fileName)))
-                    {
-                        File.Delete(Path.Combine(PluginDirectory, fileName));
+                        if (File.Exists(Path.Combine(DeactivatedPluginsDirectory, fileName)))
+                        {
+                            File.Delete(Path.Combine(DeactivatedPluginsDirectory, fileName));
+                        }
                     }
                 }
-                RefreshActicatedPluginList();
+                RefreshPluinLists();
+            }
+        }
+
+        private void btn_TogglePluginActivation_Click(object sender, RoutedEventArgs e)
+        {
+            if (LastManipulatedListBox != null && LastManipulatedListBox.Items.Count > 0 && LastManipulatedListBox.SelectedIndex != -1)
+            {
+                if (LastManipulatedListBox == list_Plugins)
+                {
+                    foreach (string fileName in list_Plugins.SelectedItems)
+                    {
+                        if (File.Exists(Path.Combine(PluginDirectory, fileName)))
+                        {
+                            File.Move(Path.Combine(PluginDirectory, fileName), Path.Combine(DeactivatedPluginsDirectory, fileName));
+                        }
+                    }
+                }
+                else if (LastManipulatedListBox == list_DeactivatedPlugins)
+                {
+                    foreach (string fileName in list_DeactivatedPlugins.SelectedItems)
+                    {
+                        if (File.Exists(Path.Combine(DeactivatedPluginsDirectory, fileName)))
+                        {
+                            File.Move(Path.Combine(DeactivatedPluginsDirectory, fileName), Path.Combine(PluginDirectory, fileName));
+                        }
+                    }
+                }
+                RefreshPluinLists();
             }
         }
 
@@ -748,6 +782,7 @@ namespace MurkysRustBoot
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
+                var listBox = (sender as ListBox) == list_Plugins ? list_Plugins : list_DeactivatedPlugins;
                 txt_PluginsDragMessage.Visibility = Visibility.Visible;
                 string[] filePaths = (string[])e.Data.GetData(DataFormats.FileDrop);
                 bool isValidFileExtensions = true;
@@ -763,15 +798,15 @@ namespace MurkysRustBoot
                 {
                     ValidDrop = false;
                     e.Effects = DragDropEffects.None;
-                    list_Plugins.BorderBrush = GetColorBrush("DangerRed");
+                    listBox.BorderBrush = GetColorBrush("DangerRed");
                     txt_PluginsDragMessage.Foreground = GetColorBrush("DangerRed");
-                    txt_PluginsDragMessage.Text = "Invalid file(s) detected";
+                    txt_PluginsDragMessage.Text = "Invalid file(s)";
                 }
                 else
                 {
                     ValidDrop = true;
                     e.Effects = DragDropEffects.Copy;
-                    list_Plugins.BorderBrush = GetColorBrush("SuccessGreen");
+                    listBox.BorderBrush = GetColorBrush("SuccessGreen");
                     txt_PluginsDragMessage.Foreground = GetColorBrush("SuccessGreen");
                     txt_PluginsDragMessage.Text = "Drop to import";
                 }
@@ -780,40 +815,52 @@ namespace MurkysRustBoot
 
         private void list_Plugins_DragLeave(object sender, DragEventArgs e)
         {
-            list_Plugins.BorderBrush = GetColorBrush("BorderDarkGreen");
+            var listBox = (sender as ListBox) == list_Plugins ? list_Plugins : list_DeactivatedPlugins;
+            listBox.BorderBrush = GetColorBrush("BorderDarkGreen");
             txt_PluginsDragMessage.Foreground = new SolidColorBrush(Colors.White);
             txt_PluginsDragMessage.Text = "Drag and drop";
         }
         
         private void list_Plugins_Drop(object sender, DragEventArgs e)
         {
+            var listBox = (sender as ListBox) == list_Plugins ? list_Plugins : list_DeactivatedPlugins;
             if (ValidDrop && e.Data.GetDataPresent(DataFormats.FileDrop))
             {
+                var pluginDir = listBox == list_Plugins ? PluginDirectory : DeactivatedPluginsDirectory;
+                var otherPluginDir = listBox == list_Plugins ? DeactivatedPluginsDirectory : PluginDirectory;
                 string[] filePaths = (string[])e.Data.GetData(DataFormats.FileDrop);
                 for (int i = 0; i < filePaths.Length; i++)
                 {
                     var filePath = filePaths[i];
                     var fileName = Path.GetFileName(filePaths[i]);
-                    if (File.Exists(Path.Combine(PluginDirectory, fileName)))
+                    if (File.Exists(Path.Combine(pluginDir, fileName)))
                     {
-                        if (MessageBox.Show("Overwrite "+ fileName +"?\nClicking no will skip this file","Overwrite?",MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                        if (MessageBox.Show("Overwrite " + fileName + "?\nClicking no will skip this file", "Overwrite?", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                         {
-                            File.Copy(filePath, Path.Combine(PluginDirectory, fileName), true);
+                            File.Copy(filePath, Path.Combine(pluginDir, fileName), true);
                         }
                     }
                     else
                     {
-                        File.Copy(filePath, Path.Combine(PluginDirectory, fileName));
+                        if (File.Exists(Path.Combine(otherPluginDir, fileName)))
+                        {
+                            var listName = listBox == list_Plugins ? "deactivated plugins" : "activated plugins";
+                            MessageBox.Show(fileName + " is already listed in " + listName + ". skipping this file.", "Plugin exists");
+                        }
+                        else
+                        {
+                            File.Copy(filePath, Path.Combine(pluginDir, fileName));
+                        }
                     }
                 }
-                RefreshActicatedPluginList();
+                RefreshPluinLists();
                 txt_PluginsDragMessage.Visibility = Visibility.Collapsed;
-                list_Plugins.BorderBrush = GetColorBrush("BorderDarkGreen");
+                listBox.BorderBrush = GetColorBrush("BorderDarkGreen");
             }
             else
             {
                 txt_PluginsDragMessage.Visibility = Visibility.Collapsed;
-                list_Plugins.BorderBrush = GetColorBrush("BorderDarkGreen");
+                listBox.BorderBrush = GetColorBrush("BorderDarkGreen");
             }
         }
 
@@ -822,7 +869,15 @@ namespace MurkysRustBoot
             return Resources[name] as SolidColorBrush;
         }
 
-        
+        private void img_RustLogo_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            Process.Start("https://playrust.com/");
+        }
+
+        private void img_OxideLogo_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            Process.Start("http://oxidemod.org/");
+        }
     }
 
     public static class ExtensionMethods

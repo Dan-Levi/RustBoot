@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MurkysRustBoot"
         mc:Ignorable="d"
-        Title="Murky's RustBoot" Width="860" MinWidth="860" MinHeight="600" Height="550" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Closing="RustBoot_Closing" MouseDown="RustBoot_MouseDown" AllowsTransparency="True" WindowStyle="None" StateChanged="RustBoot_StateChanged">
+        Title="Murky's RustBoot" Width="860" MinWidth="860" MinHeight="600" Height="550" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Closing="RustBoot_Closing" AllowsTransparency="True" WindowStyle="None" StateChanged="RustBoot_StateChanged">
     <Window.Resources>
         <Color x:Key="Color_BorderDarkGreen">#1c211c</Color>
         <Color x:Key="Color_InfoBlue">#15486d</Color>
@@ -48,6 +48,16 @@
             <Setter Property="Height" Value="20"></Setter>
             <Setter Property="HorizontalAlignment" Value="Left"></Setter>
             <Setter Property="FontWeight" Value="Normal"/>
+        </Style>
+        <Style x:Key="Img_HoverTemplate" TargetType="Image">
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="False">
+                    <Setter Property="Opacity" Value="0.5"></Setter>
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Opacity" Value="1"></Setter>
+                </Trigger>
+            </Style.Triggers>
         </Style>
         <Style x:Key="Btn_Template" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
             <Setter Property="OverridesDefaultStyle" Value="true"/>
@@ -124,9 +134,15 @@
             <ColumnDefinition MinWidth="200"></ColumnDefinition>
             <ColumnDefinition Width="150"></ColumnDefinition>
         </Grid.ColumnDefinitions>
+        <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="16,0,0,0">
+            <Image x:Name="img_RustLogo" Style="{StaticResource Img_HoverTemplate}" Height="25" Source="Images/logo_Rust.png" Cursor="Hand" MouseDown="img_RustLogo_MouseDown"></Image>
+            <Image x:Name="img_OxideLogo" Style="{StaticResource Img_HoverTemplate}" Height="30" Source="Images/logo_Oxide.png" Cursor="Hand" Margin="8,0,0,0" MouseDown="img_OxideLogo_MouseDown"></Image>
+            
+        </StackPanel>
+
         <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal" Background="{StaticResource BorderDarkGreen}">
-            <Image x:Name="img_RustLogo" Height="30" Margin="158,5,5,5" Source="Images/logo_Rust.png" Cursor="Hand"></Image>
-            <TextBlock VerticalAlignment="Center" Margin="5" Foreground="#fbebe0" FontWeight="Bold" FontSize="14">Murky's RustBoot PRERELEASE</TextBlock>
+            <TextBlock VerticalAlignment="Center" Margin="5" Foreground="#fbebe0" FontWeight="Bold" FontSize="14">Murky's RustBoot </TextBlock>
+            
         </StackPanel>
         <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right"  Height="20">
             <Button x:Name="btn_Report" FontSize="12" FontWeight="Black" Style="{StaticResource Btn_Template}" Background="{StaticResource SuccessGreen}" Height="20" Width="20" ToolTip="Report bug" Click="btn_Report_Click">
@@ -274,7 +290,7 @@
                                     </Grid.RowDefinitions>
                                     <TextBlock Grid.Column="0" Grid.Row="0" Text="Activated" HorizontalAlignment="Center"/>
                                     <TextBlock Grid.Column="2" Grid.Row="0" Text="Deactivated" HorizontalAlignment="Center"/>
-                                    <Button x:Name="btn_TogglePluginActivation" Grid.Column="1" Grid.Row="1" Style="{StaticResource Btn_Template}" Margin="0" Height="40" Background="{StaticResource DangerRed}" IsEnabled="false">
+                                    <Button x:Name="btn_TogglePluginActivation" Grid.Column="1" Grid.Row="1" Style="{StaticResource Btn_Template}" Margin="0" Height="40" Background="{StaticResource DangerRed}" IsEnabled="false" Click="btn_TogglePluginActivation_Click">
                                         <Image Source="Images/icon_Swap.png"/>
                                     </Button>
                                     <TextBlock x:Name="txt_PluginsDragMessage" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Left" Foreground="White" IsHitTestVisible="False">Drag and drop &#8595;</TextBlock>
@@ -425,5 +441,6 @@
                 </TabControl>
             </DockPanel>
         </Border>
+        <TextBlock Grid.Column="2" Grid.Row="3" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="16,8" Foreground="{StaticResource SuccessGreen}" FontWeight="Bold" FontSize="10">v0.0.36 ALPHA</TextBlock>
     </Grid>
 </Window>
