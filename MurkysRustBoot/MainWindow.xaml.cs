@@ -1,11 +1,15 @@
 ﻿using Microsoft.Win32;
 using MurkysRustBoot.Classes;
 using MurkysRustBoot.Properties;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -29,13 +33,13 @@ namespace MurkysRustBoot
             LoadSettings();
             CheckSettings();
         }
-
         private void InitApp()
         {
+            DataContext = this;
             Window_Settings.Visibility = Visibility.Visible;
             Window_Running.Visibility = Visibility.Collapsed;
+            DeleteCorePlugin();
         }
-
         void LoadSettings()
         {
             var Settings = Properties.Settings.Default;
@@ -49,7 +53,7 @@ namespace MurkysRustBoot
             txt_RCONport.Text = Settings.RCONport.ToString();
             txt_RCONpassword.Password = Settings.RCONpassword.ToString();
             txt_Hostname.Text = Settings.Hostname;
-            
+
             txt_Description.Text = Settings.Description;
             txt_Headerimage.Text = Settings.Headerimage;
             txt_Url.Text = Settings.Url;
@@ -107,7 +111,7 @@ namespace MurkysRustBoot
             Settings.Rustserverexecutable = DefaultSettings.Rustserverexecutable;
             Settings.Rustserverexecutablelocation = DefaultSettings.Rustserverexecutablelocation;
             Settings.Logfile = DefaultSettings.Logfile;
-            Settings.IsRunning = DefaultSettings.IsRunning;
+
             Settings.CustomArguments = DefaultSettings.CustomArguments;
             Settings.Save();
             btn_StartServer.IsEnabled = false;
@@ -280,20 +284,69 @@ namespace MurkysRustBoot
                         UseShellExecute = false
                     }
                 };
+                CheckForCorePlugin();
                 InitiateLogWatchers();
+                InitiatePlayerList();
                 serverProcess.Start();
                 while (serverProcess.MainWindowHandle == IntPtr.Zero)
                 {
                     Thread.Yield();
                 }
                 ShowWindow(serverProcess.MainWindowHandle.ToInt32(), SW_HIDE);
-                Properties.Settings.Default.IsRunning = true;
+
                 Properties.Settings.Default.Save();
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Ops! Errormessage:\n" + ex.Message + "\n\nPlease report back to author: post@dan-levi.no");
 
+            }
+        }
+
+        private void InitiatePlayerList()
+        {
+            Players = new ObservableCollection<Player>();
+            list_Players.ItemsSource = Players;
+        }
+
+        private void CheckForCorePlugin()
+        {
+            PluginDirectory = Path.Combine(new string[] {
+                Path.GetDirectoryName(Properties.Settings.Default.Rustserverexecutable),
+                "server",
+                Properties.Settings.Default.Identity,
+                "oxide",
+                "plugins" });
+            AddCorePlugin();
+        }
+
+        private void AddCorePlugin()
+        {
+            if (!Directory.Exists(PluginDirectory))
+                Directory.CreateDirectory(PluginDirectory);
+            if (!File.Exists(Path.Combine(PluginDirectory, "MurkysCore.cs")))
+            {
+                using (FileStream fileStream = File.Create(Path.Combine(PluginDirectory, "MurkysCore.cs")))
+                {
+                    Assembly.GetExecutingAssembly().GetManifestResourceStream("MurkysRustBoot.Plugins.MurkysCore.cs").CopyTo(fileStream);
+                }
+            }
+        }
+
+        private void DeleteCorePlugin()
+        {
+            if (!string.IsNullOrEmpty(Properties.Settings.Default.Identity))
+            {
+                PluginDirectory = Path.Combine(new string[] {
+                    Path.GetDirectoryName(Properties.Settings.Default.Rustserverexecutable),
+                    "server",
+                    Properties.Settings.Default.Identity,
+                    "oxide",
+                    "plugins" });
+                if (File.Exists(Path.Combine(PluginDirectory, "MurkysCore.cs")))
+                {
+                    File.Delete(Path.Combine(PluginDirectory, "MurkysCore.cs"));
+                }
             }
         }
 
@@ -331,19 +384,19 @@ namespace MurkysRustBoot
         {
             if (LogFiles.ContainsKey(e.Name))
             {
-                Dispatcher.Invoke(new Action(() =>
+                try
                 {
-                    var logFileTextBox = (TextBox)this.FindName("log_" + LogFiles[e.Name]);
-                    try
+                    Dispatcher.Invoke(new Action(() =>
                     {
+                        var logFileTextBox = (TextBox)this.FindName("log_" + LogFiles[e.Name]);
                         CheckLastLineForCommand(e.FullPath);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("Ops! Couldn't read last line in LogFilesOnChanged method: \n" + ex);
-                    }
-                    UpdateLog(logFileTextBox, e.Name, e.FullPath);
-                }));
+                        UpdateLog(logFileTextBox, e.Name, e.FullPath);
+                    }));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Ops! Couldn't read last line in LogFilesOnChanged method: \n" + ex);
+                }
             }
         }
 
@@ -366,8 +419,12 @@ namespace MurkysRustBoot
             }
         }
 
+
+        bool IsRunning = false;
+
         void EnableConsole()
         {
+            IsRunning = true;
             btn_SendCommand.IsEnabled = true;
             txt_CommandBox.IsEnabled = true;
             btn_RestartServer.IsEnabled = true;
@@ -376,6 +433,7 @@ namespace MurkysRustBoot
         }
         void DisableConsole()
         {
+            IsRunning = false;
             btn_SendCommand.IsEnabled = false;
             txt_CommandBox.IsEnabled = false;
             btn_RestartServer.IsEnabled = false;
@@ -389,15 +447,73 @@ namespace MurkysRustBoot
             {
                 int totalLines = ReadLines(logFilefullPath).ToArray().Length;
                 int newLinesCount = totalLines - LogFilesReadCount[logFileName];
-                var logPart = ReadLines(logFilefullPath).Skip(LogFilesReadCount[logFileName]).Take(newLinesCount);
+                var logPart = ReadLines(logFilefullPath).Skip(LogFilesReadCount[logFileName]).Take(newLinesCount).ToArray();
                 LogFilesReadCount[logFileName] = totalLines;
-                logFileTextBox.AppendText(string.Join("\n", logPart.ToArray()) + "\n");
+                for (int i = 0; i < logPart.Length; i++)
+                {
+                    if (!logPart[i].Contains("[Info] [Murkys Core] |||JSON|||") && !string.IsNullOrEmpty(logPart[i]))
+                    {
+                        logFileTextBox.AppendText(logPart[i] + "\n");
+                    }
+                    else
+                    {
+                        ParseCorePluginMessage(logPart[i]);
+                    }
+                }
                 logFileTextBox.ScrollToEnd();
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Ops! " + ex.Message + "\n\nPlease report back to author: post@dan-levi.no");
             }
+        }
+
+
+
+        private void ParseCorePluginMessage(string v)
+        {
+            var json = v.Split(new string[] { "|||JSON|||" }, StringSplitOptions.RemoveEmptyEntries)[1];
+            RustBootReport report = JsonConvert.DeserializeObject<RustBootReport>(json);
+            if (IsRunning)
+            {
+                switch (report.Command)
+                {
+                    case "RustBootPluginInit":
+                        break;
+                    case "PlayerConnected":
+                        AddPlayer(report.Message);
+                        break;
+                    case "PlayerDisconnected":
+                        RemovePlayer(report.Message);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        private void AddPlayer(string json)
+        {
+            Player player = JsonConvert.DeserializeObject<Player>(json);
+            Console.WriteLine("Player added: " + player.DisplayName);
+            Players.Add(player);
+        }
+
+        private void RemovePlayer(string json)
+        {
+            Player player = JsonConvert.DeserializeObject<Player>(json);
+            var client = _players.FirstOrDefault(i => i.UserID == player.UserID);
+            if (client != null)
+            {
+                _players.Remove(client);
+            }
+        }
+
+        ObservableCollection<Player> _players;
+        public ObservableCollection<Player> Players
+        {
+            get { return _players; }
+            set { _players = value; }
         }
 
         private void UpdateLog(TextBox logFileTextBox, string logFileName, string logFilefullPath, bool manualUpdate)
@@ -407,7 +523,14 @@ namespace MurkysRustBoot
                 if (File.Exists(Path.Combine(logFilefullPath, logFileName)))
                 {
                     logFileTextBox.Clear();
-                    logFileTextBox.AppendText(File.ReadAllText(Path.Combine(logFilefullPath, logFileName)));
+                    var log = File.ReadAllLines(Path.Combine(logFilefullPath, logFileName));
+                    for (int i = 0; i < log.Length; i++)
+                    {
+                        if (!log[i].Contains("[Info] [Murkys Core] |||JSON|||") && !string.IsNullOrEmpty(log[i]))
+                        {
+                            logFileTextBox.AppendText(log[i] + "\n");
+                        }
+                    }
                     ScrollLogToEnd(logFileTextBox);
                 }
             }
@@ -533,7 +656,7 @@ namespace MurkysRustBoot
                 SwitchWindowLayout(ServerState.STOPPED);
                 if (serverProcess != null && serverProcess.MainWindowHandle != IntPtr.Zero)
                 {
-                    Properties.Settings.Default.IsRunning = false;
+
                     serverProcess.CloseMainWindow();
                     InitLaunch();
                 }
@@ -544,12 +667,13 @@ namespace MurkysRustBoot
         {
             if (MessageBox.Show("Are you sure you want to stop the server?", "Stop server?", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
+                DeleteCorePlugin();
                 DisableConsole();
                 if (serverProcess != null && serverProcess.MainWindowHandle != IntPtr.Zero)
                 {
                     serverProcess.CloseMainWindow();
                     SwitchWindowLayout(ServerState.STOPPED);
-                    Properties.Settings.Default.IsRunning = false;
+
                 }
             }
         }
@@ -563,7 +687,8 @@ namespace MurkysRustBoot
             }
             else
             {
-                Properties.Settings.Default.IsRunning = false;
+                DeleteCorePlugin();
+
                 if (serverProcess != null && serverProcess.MainWindowHandle != IntPtr.Zero)
                 {
                     serverProcess.CloseMainWindow();
@@ -590,7 +715,7 @@ namespace MurkysRustBoot
             }
         }
 
-        
+
         private void btn_Minimize_Click(object sender, RoutedEventArgs e)
         {
             WindowState = WindowState.Minimized;
@@ -628,10 +753,10 @@ namespace MurkysRustBoot
             });
         }
 
-        
+
 
         private void tabs_Menu_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {            
+        {
             var selectedTab = (sender as TabControl).SelectedItem as TabItem;
             if (selectedTab.Header.ToString() == "Plugins")
             {
@@ -660,7 +785,7 @@ namespace MurkysRustBoot
             var Settings = Properties.Settings.Default;
             Plugins = new List<string>();
             DeactivatedPlugins = new List<string>();
-            
+
             if (Settings.Identity != txt_Hostname.Text.Sanitize())
             {
                 Settings.Identity = txt_Hostname.Text.Sanitize();
@@ -718,16 +843,16 @@ namespace MurkysRustBoot
                 btn_DeletePlugins.IsEnabled = false;
             }
         }
-        
+
         private void btn_DeletePlugins_Click(object sender, RoutedEventArgs e)
         {
-            if (MessageBox.Show("Are you sure you want to delete the selected plugin(s)?","Delete selected plugins?",MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            if (MessageBox.Show("Are you sure you want to delete the selected plugin(s)?", "Delete selected plugins?", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
                 foreach (string fileName in LastManipulatedListBox.SelectedItems)
                 {
                     if (LastManipulatedListBox == list_Plugins)
                     {
-                        if ( File.Exists( Path.Combine( PluginDirectory, fileName)))
+                        if (File.Exists(Path.Combine(PluginDirectory, fileName)))
                         {
                             File.Delete(Path.Combine(PluginDirectory, fileName));
                         }
@@ -820,7 +945,7 @@ namespace MurkysRustBoot
             txt_PluginsDragMessage.Foreground = new SolidColorBrush(Colors.White);
             txt_PluginsDragMessage.Text = "Drag and drop";
         }
-        
+
         private void list_Plugins_Drop(object sender, DragEventArgs e)
         {
             var listBox = (sender as ListBox) == list_Plugins ? list_Plugins : list_DeactivatedPlugins;
@@ -877,6 +1002,21 @@ namespace MurkysRustBoot
         private void img_OxideLogo_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             Process.Start("http://oxidemod.org/");
+        }
+
+        private void RustBoot_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (e.LeftButton == System.Windows.Input.MouseButtonState.Pressed)
+            {
+                DragMove();
+            }
+        }
+
+        private void list_Players_LayoutUpdated(object sender, EventArgs e)
+        {
+
+            txt_Playercount.Text = _players != null ? _players.Count.ToString() : txt_Playercount.Text;
+
         }
     }
 

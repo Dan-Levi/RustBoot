@@ -7,7 +7,9 @@ E:\VisualStudio2015Projects\MurkysRustBoot\MurkysRustBoot\obj\Debug\MainWindow.g
 E:\VisualStudio2015Projects\MurkysRustBoot\MurkysRustBoot\obj\Debug\App.g.cs
 E:\VisualStudio2015Projects\MurkysRustBoot\MurkysRustBoot\obj\Debug\MurkysRustBoot_MarkupCompile.cache
 E:\VisualStudio2015Projects\MurkysRustBoot\MurkysRustBoot\obj\Debug\MurkysRustBoot_MarkupCompile.lref
+E:\VisualStudio2015Projects\MurkysRustBoot\MurkysRustBoot\obj\Debug\App.baml
 E:\VisualStudio2015Projects\MurkysRustBoot\MurkysRustBoot\obj\Debug\MainWindow.baml
+E:\VisualStudio2015Projects\MurkysRustBoot\MurkysRustBoot\obj\Debug\Style_Colors.baml
 E:\VisualStudio2015Projects\MurkysRustBoot\MurkysRustBoot\obj\Debug\MurkysRustBoot.g.resources
 E:\VisualStudio2015Projects\MurkysRustBoot\MurkysRustBoot\obj\Debug\MurkysRustBoot.Properties.Resources.resources
 E:\VisualStudio2015Projects\MurkysRustBoot\MurkysRustBoot\obj\Debug\MurkysRustBoot.csproj.GenerateResource.Cache
@@ -16,3 +18,9 @@ E:\VisualStudio2015Projects\MurkysRustBoot\MurkysRustBoot\obj\Debug\MurkysRustBo
 E:\VisualStudio2015Projects\MurkysRustBoot\MurkysRustBoot\obj\Debug\MurkysRustBoot.exe
 E:\VisualStudio2015Projects\MurkysRustBoot\MurkysRustBoot\obj\Debug\MurkysRustBoot.pdb
 E:\VisualStudio2015Projects\MurkysRustBoot\MurkysRustBoot\obj\Debug\MurkysRustBoot.csprojResolveAssemblyReference.cache
+E:\VisualStudio2015Projects\MurkysRustBoot\MurkysRustBoot\obj\Debug\ControlTemplates.baml
+E:\VisualStudio2015Projects\MurkysRustBoot\MurkysRustBoot\obj\Debug\Style_Controls.baml
+E:\VisualStudio2015Projects\MurkysRustBoot\MurkysRustBoot\obj\Debug\GuiText.baml
+E:\VisualStudio2015Projects\MurkysRustBoot\MurkysRustBoot\bin\Debug\Newtonsoft.Json.dll
+E:\VisualStudio2015Projects\MurkysRustBoot\MurkysRustBoot\bin\Debug\Newtonsoft.Json.xml
+E:\VisualStudio2015Projects\MurkysRustBoot\MurkysRustBoot\obj\Debug\DataTemplates.baml

@@ -1,0 +1,24 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:MurkysRustBoot">
+    <Color x:Key="Color_BorderDarkGreen">#1c211c</Color>
+    <Color x:Key="Color_InfoBlue">#15486d</Color>
+    <Color x:Key="Color_InfoBlue_HighLighted">#49aff6</Color>
+    <Color x:Key="Color_SuccessGreen">#738d45</Color>
+    <Color x:Key="Color_SuccessGreen_Highlighted">#d6d1be</Color>
+    <Color x:Key="Color_DangerOrange">#f0ad4e</Color>
+    <Color x:Key="Color_DangerOrange_Highlighted">#fce7ca</Color>
+    <Color x:Key="Color_DangerRed">#cd402a</Color>
+    <Color x:Key="Color_DangerRed_Highlighted">#eac6bc</Color>
+    <Color x:Key="Color_GrayDisabled">#9b9d9b</Color>
+    <SolidColorBrush x:Key="BorderDarkGreen" Color="{StaticResource Color_BorderDarkGreen}"/>
+    <SolidColorBrush x:Key="InfoBlue" Color="{StaticResource Color_InfoBlue}"/>
+    <SolidColorBrush x:Key="InfoBlue_Highlighted" Color="{StaticResource Color_InfoBlue_HighLighted}"/>
+    <SolidColorBrush x:Key="SuccessGreen" Color="{StaticResource Color_SuccessGreen}"/>
+    <SolidColorBrush x:Key="SuccessGreen_Highlighted" Color="{StaticResource Color_SuccessGreen_Highlighted}"/>
+    <SolidColorBrush x:Key="DangerOrange" Color="{StaticResource Color_DangerOrange}"/>
+    <SolidColorBrush x:Key="DangerOrange_Highlighted" Color="{StaticResource Color_DangerOrange_Highlighted}"/>
+    <SolidColorBrush x:Key="DangerRed" Color="{StaticResource Color_DangerRed}"/>
+    <SolidColorBrush x:Key="DangerRed_Highlighted" Color="{StaticResource Color_DangerRed_Highlighted}"/>
+    <SolidColorBrush x:Key="GrayDisabled" Color="{StaticResource Color_GrayDisabled}"/>
+</ResourceDictionary>

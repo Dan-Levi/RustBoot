@@ -1,0 +1,53 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:MurkysRustBoot"
+                    xmlns:my="clr-namespace:System;assembly=mscorlib">
+    
+    <my:String x:Key="AppVersion">0.0.36</my:String>
+    <my:String x:Key="AppName">Murky's RustBoot</my:String>
+    
+    <!--#region Main tabs-->
+
+    <my:String x:Key="General:">General</my:String>
+    <my:String x:Key="RCON:">RCON</my:String>
+    <my:String x:Key="Plugins:">Plugins</my:String>
+    <my:String x:Key="Advanced:">Advanced</my:String>
+    
+    <!--#endregion-->
+    
+    <!--#region Labels -->
+
+    <my:String x:Key="Hostname:">Hostname:</my:String>
+    <my:String x:Key="Seed:">Seed:</my:String>
+    <my:String x:Key="Maxplayers:">Max players:</my:String>
+    <my:String x:Key="Description:">Description:</my:String>
+    <my:String x:Key="Headerimage:">Header image:</my:String>
+    <my:String x:Key="Homepage:">Homepage:</my:String>
+    <my:String x:Key="World size:">World size:</my:String>
+    
+    <my:String x:Key="Enabled:">Enabled:</my:String>
+    <my:String x:Key="Port:">Port:</my:String>
+    <my:String x:Key="Password:">Password:</my:String>
+    
+    <my:String x:Key="Tickrate:">Tickrate:</my:String>
+    <my:String x:Key="Customarguments:">Custom arguments:</my:String>
+    <my:String x:Key="Customargumentsdescription">+server.entityrate 16</my:String>
+    <my:String x:Key="Saveinterval:">Save interval:</my:String>
+
+
+    <my:String x:Key="Save">Save</my:String>
+    <my:String x:Key="Stop">Stop</my:String>
+    <my:String x:Key="Ready">Ready</my:String>
+    <my:String x:Key="Restart">Restart</my:String>
+    <my:String x:Key="Reset">Reset</my:String>
+    <my:String x:Key="Send">Send</my:String>
+    <my:String x:Key="Activated">Activated</my:String>
+    <my:String x:Key="Deactivated">Deactivated</my:String>
+
+
+    <!--#endregion-->
+    
+
+
+    
+</ResourceDictionary>

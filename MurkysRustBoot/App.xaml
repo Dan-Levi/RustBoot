@@ -4,6 +4,14 @@
              xmlns:local="clr-namespace:MurkysRustBoot"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Style_Colors.xaml"/>
+                <ResourceDictionary Source="Style_Controls.xaml"/>
+                <ResourceDictionary Source="ControlTemplates.xaml"/>
+                <ResourceDictionary Source="GuiText.xaml"/>
+                <ResourceDictionary Source="DataTemplates.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

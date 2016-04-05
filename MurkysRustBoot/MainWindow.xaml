@@ -5,120 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MurkysRustBoot"
         mc:Ignorable="d"
-        Title="Murky's RustBoot" Width="860" MinWidth="860" MinHeight="600" Height="550" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Closing="RustBoot_Closing" AllowsTransparency="True" WindowStyle="None" StateChanged="RustBoot_StateChanged">
-    <Window.Resources>
-        <Color x:Key="Color_BorderDarkGreen">#1c211c</Color>
-        <Color x:Key="Color_InfoBlue">#15486d</Color>
-        <Color x:Key="Color_InfoBlue_HighLighted">#49aff6</Color>
-        <Color x:Key="Color_SuccessGreen">#738d45</Color>
-        <Color x:Key="Color_SuccessGreen_Highlighted">#d6d1be</Color>
-        <Color x:Key="Color_DangerOrange">#f0ad4e</Color>
-        <Color x:Key="Color_DangerOrange_Highlighted">#fce7ca</Color>
-        <Color x:Key="Color_DangerRed">#cd402a</Color>
-        <Color x:Key="Color_DangerRed_Highlighted">#eac6bc</Color>
-        <Color x:Key="Color_GrayDisabled">#9b9d9b</Color>
-        <SolidColorBrush x:Key="BorderDarkGreen" Color="{StaticResource Color_BorderDarkGreen}"/>
-        <SolidColorBrush x:Key="InfoBlue" Color="{StaticResource Color_InfoBlue}"/>
-        <SolidColorBrush x:Key="InfoBlue_Highlighted" Color="{StaticResource Color_InfoBlue_HighLighted}"/>
-        <SolidColorBrush x:Key="SuccessGreen" Color="{StaticResource Color_SuccessGreen}"/>
-        <SolidColorBrush x:Key="SuccessGreen_Highlighted" Color="{StaticResource Color_SuccessGreen_Highlighted}"/>
-        <SolidColorBrush x:Key="DangerOrange" Color="{StaticResource Color_DangerOrange}"/>
-        <SolidColorBrush x:Key="DangerOrange_Highlighted" Color="{StaticResource Color_DangerOrange_Highlighted}"/>
-        <SolidColorBrush x:Key="DangerRed" Color="{StaticResource Color_DangerRed}"/>
-        <SolidColorBrush x:Key="DangerRed_Highlighted" Color="{StaticResource Color_DangerRed_Highlighted}"/>
-        <SolidColorBrush x:Key="GrayDisabled" Color="{StaticResource Color_GrayDisabled}"/>
-        <Style x:Key="TabItem" TargetType="TabItem">
-            <Setter Property="Background" Value="{StaticResource InfoBlue}"/>
-        </Style>
-        <Style x:Key="SettingHeader" TargetType="TextBlock">
-            <Setter Property="Background" Value="Transparent"></Setter>
-            <Setter Property="Foreground" Value="White"></Setter>
-            <Setter Property="FontWeight" Value="Normal"></Setter>
-        </Style>
-        <Style x:Key="SettingTextBox" TargetType="TextBox">
-            <Setter Property="Background" Value="{StaticResource BorderDarkGreen}"></Setter>
-            <Setter Property="Foreground" Value="White"></Setter>
-            <Setter Property="Width" Value="140"></Setter>
-            <Setter Property="Height" Value="20"></Setter>
-            <Setter Property="HorizontalAlignment" Value="Left"></Setter>
-            <Setter Property="FontWeight" Value="Normal"/>
-        </Style>
-        <Style x:Key="SettingPasswordBox" TargetType="PasswordBox">
-            <Setter Property="Width" Value="140"></Setter>
-            <Setter Property="Height" Value="20"></Setter>
-            <Setter Property="HorizontalAlignment" Value="Left"></Setter>
-            <Setter Property="FontWeight" Value="Normal"/>
-        </Style>
-        <Style x:Key="Img_HoverTemplate" TargetType="Image">
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="False">
-                    <Setter Property="Opacity" Value="0.5"></Setter>
-                </Trigger>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Opacity" Value="1"></Setter>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-        <Style x:Key="Btn_Template" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-            <Setter Property="OverridesDefaultStyle" Value="true"/>
-            <Setter Property="BorderThickness" Value="0"></Setter>
-            <Setter Property="Height" Value="40"></Setter>
-            <Setter Property="Margin" Value="0,0,8,0"></Setter>
-            <Setter Property="FontWeight" Value="Bold"></Setter>
-            <Setter Property="FontSize" Value="16"></Setter>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border x:Name="Border"
-                        BorderThickness="0"
-                        Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}">
-                            <ContentPresenter Margin="2" HorizontalAlignment="Center" VerticalAlignment="Center" RecognizesAccessKey="True"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter TargetName="Border" Property="Opacity" Value=".1" />
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="True">
-                                <Setter TargetName="Border" Property="Cursor" Value="Hand"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="False">
-                    <Setter Property="Opacity" Value="0.7"></Setter>
-                </Trigger>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Opacity" Value="1"></Setter>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
-        <ControlTemplate x:Key="tabs_Item" TargetType="{x:Type TabItem}">
-            <Grid Name="Panel">
-                <ContentPresenter x:Name="ContentSite"
-                                        VerticalAlignment="Center"
-                                        HorizontalAlignment="Center"
-                                        ContentSource="Header"
-                                        Margin="10,5"/>
-            </Grid>
-            <ControlTemplate.Triggers>
-                <Trigger Property="IsSelected" Value="True">
-                    <Setter TargetName="Panel" Property="Background" Value="{StaticResource InfoBlue}" />
-                </Trigger>
-                <Trigger Property="IsSelected" Value="False">
-                    <Setter TargetName="Panel" Property="Background" Value="{StaticResource BorderDarkGreen}" />
-                </Trigger>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter TargetName="Panel" Property="Background" Value="{StaticResource InfoBlue}" />
-                </Trigger>
-            </ControlTemplate.Triggers>
-        </ControlTemplate>
-
-
-
-    </Window.Resources>
+        xmlns:my="clr-namespace:System;assembly=mscorlib"
+        Title="Murky's RustBoot" Width="860" MinWidth="860" MinHeight="600" Height="550" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Closing="RustBoot_Closing" AllowsTransparency="True" WindowStyle="None" StateChanged="RustBoot_StateChanged" MouseDown="RustBoot_MouseDown">
     <Grid>
         <Grid.Background>
             <ImageBrush ImageSource="Images/bg_Rust.png"/>
@@ -141,8 +29,8 @@
         </StackPanel>
 
         <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal" Background="{StaticResource BorderDarkGreen}">
-            <TextBlock VerticalAlignment="Center" Margin="5" Foreground="#fbebe0" FontWeight="Bold" FontSize="14">Murky's RustBoot </TextBlock>
-            
+            <TextBlock VerticalAlignment="Center" Margin="5" Foreground="#fbebe0" FontWeight="Bold" FontSize="14" Text="{StaticResource AppName}"/>
+
         </StackPanel>
         <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right"  Height="20">
             <Button x:Name="btn_Report" FontSize="12" FontWeight="Black" Style="{StaticResource Btn_Template}" Background="{StaticResource SuccessGreen}" Height="20" Width="20" ToolTip="Report bug" Click="btn_Report_Click">
@@ -163,18 +51,17 @@
             <TextBox Background="{StaticResource BorderDarkGreen}" x:Name="txt_Rustserverexecutable" Style="{StaticResource SettingTextBox}" IsReadOnly="True" Margin="0,0,8,0" Height="25" Width="263" Foreground="White" Padding="4,4,0,0"></TextBox>
             <Button x:Name="btn_Rustserverexecutable" Style="{StaticResource Btn_Template}" Background="{StaticResource SuccessGreen}" Foreground="{StaticResource SuccessGreen_Highlighted}" Margin="0" Width="32" Height="25" Click="btn_Rustserverexecutable_Click">...</Button>
         </StackPanel>
-        <Button x:Name="btn_SaveSettings" Grid.Row="1" Grid.Column="1" Style="{StaticResource Btn_Template}" Width="60" Height="25" Margin="0,0,68,8"    Background="{StaticResource SuccessGreen}" Foreground="{StaticResource SuccessGreen_Highlighted}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Click="btn_SaveSettings_Click">Save</Button>
-        <Button x:Name="btn_ResetSettings" Grid.Row="1" Grid.Column="1" Style="{StaticResource Btn_Template}" Width="60" Height="25"    Background="{StaticResource DangerOrange}" Foreground="{StaticResource DangerOrange_Highlighted}" Margin="0,0,0,8" VerticalAlignment="Bottom" HorizontalAlignment="Right" Click="btn_ResetSettings_Click">Reset</Button>
-
-        <Border x:Name="Window_Settings" Grid.Row="2" Grid.Column="1" BorderBrush="{StaticResource BorderDarkGreen}" Background="{StaticResource BorderDarkGreen}" BorderThickness="8">
+        <Button x:Name="btn_SaveSettings" Grid.Row="1" Grid.Column="1" Style="{StaticResource Btn_Template}" Width="60" Height="25" Margin="0,0,68,8"    Background="{StaticResource SuccessGreen}" Foreground="{StaticResource SuccessGreen_Highlighted}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Click="btn_SaveSettings_Click" Content="{StaticResource Save}"/>
+        <Button x:Name="btn_ResetSettings" Grid.Row="1" Grid.Column="1" Style="{StaticResource Btn_Template}" Width="60" Height="25"    Background="{StaticResource DangerOrange}" Foreground="{StaticResource DangerOrange_Highlighted}" Margin="0,0,0,8" VerticalAlignment="Bottom" HorizontalAlignment="Right" Click="btn_ResetSettings_Click" Content="{StaticResource Reset}"/>
+        <Border x:Name="Window_Settings" Grid.Row="2" Grid.Column="1" BorderBrush="{StaticResource BorderDarkGreen}" Background="{StaticResource BorderDarkGreen}" BorderThickness="8" Visibility="Collapsed">
             <DockPanel LastChildFill="False">
                 <Button x:Name="btn_DeletePlugins" DockPanel.Dock="Bottom" Style="{StaticResource Btn_Template}" Width="50" Background="{StaticResource DangerRed}" Foreground="{StaticResource DangerRed_Highlighted}" HorizontalAlignment="Left" ToolTip="Delete selected plugin(s)" Margin="100,0,0,0" Visibility="Collapsed" IsEnabled="False" Click="btn_DeletePlugins_Click">
                     <Image Source="Images/icon_Trashcan.png" AllowDrop="True"/>
                 </Button>
                 <StackPanel x:Name="stack_Btns_Settings_Lower" DockPanel.Dock="Bottom" Height="40" Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button x:Name="btn_StartServer" Style="{StaticResource Btn_Template}" Width="70"    Background="{StaticResource SuccessGreen}" Foreground="{StaticResource SuccessGreen_Highlighted}" IsEnabled="False" Content="Ready" Click="btn_StartServer_Click"/>
-                    <Button Style="{StaticResource Btn_Template}" Width="120"   Background="{StaticResource InfoBlue}"     Foreground="{StaticResource InfoBlue_Highlighted}" IsEnabled="False">Restart</Button>
-                    <Button Style="{StaticResource Btn_Template}" Width="60"    Background="{StaticResource DangerRed}"    Foreground="{StaticResource DangerRed_Highlighted}" IsEnabled="False" Margin="0">Stop</Button>
+                    <Button x:Name="btn_StartServer" Style="{StaticResource Btn_Template}" Width="70"    Background="{StaticResource SuccessGreen}" Foreground="{StaticResource SuccessGreen_Highlighted}" IsEnabled="False" Content="{StaticResource Ready}" Click="btn_StartServer_Click"/>
+                    <Button Style="{StaticResource Btn_Template}" Width="120"   Background="{StaticResource InfoBlue}"     Foreground="{StaticResource InfoBlue_Highlighted}" IsEnabled="False" Content="{StaticResource Restart}"/>
+                    <Button Style="{StaticResource Btn_Template}" Width="60"    Background="{StaticResource DangerRed}"    Foreground="{StaticResource DangerRed_Highlighted}" IsEnabled="False" Margin="0" Content="{StaticResource Stop}"/>
                 </StackPanel>
                 <TabControl x:Name="tabs_Menu" DockPanel.Dock="Top" Background="Transparent" BorderThickness="0" SelectionChanged="tabs_Menu_SelectionChanged">
                     <TabControl.Resources>
@@ -196,7 +83,7 @@
                             </Style.Triggers>
                         </Style>
                     </TabControl.Resources>
-                    <TabItem Header="General" Name="TabHome">
+                    <TabItem Header="{StaticResource General:}" Name="TabHome">
                         <Border BorderBrush="Transparent" BorderThickness="5">
                             <Grid>
                                 <Grid.RowDefinitions>
@@ -219,31 +106,25 @@
                                     <ColumnDefinition Width="110"/>
                                     <ColumnDefinition Width="140"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource SettingHeader}">Hostname:</TextBlock>
+                                <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource SettingHeader}" Text="{StaticResource Hostname:}"/>
                                 <TextBox x:Name="txt_Hostname" Grid.Row="0" Grid.Column="1" Style="{StaticResource SettingTextBox}"/>
-                                
-                                <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource SettingHeader}">Seed:</TextBlock>
+                                <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource SettingHeader}" Text="{StaticResource Seed:}"/>
                                 <TextBox x:Name="txt_Seed"  Grid.Row="2" Grid.Column="1" Style="{StaticResource SettingTextBox}" />
                                 <Button x:Name="btn_Seed" Grid.Row="2" Grid.Column="1" Width="32" HorizontalAlignment="Right" Foreground="{StaticResource SuccessGreen_Highlighted}" Background="{StaticResource SuccessGreen}" Click="btn_Seed_Click">New</Button>
-                                
-                                <TextBlock Grid.Row="4" Grid.Column="0" Style="{StaticResource SettingHeader}">Max players:</TextBlock>
+                                <TextBlock Grid.Row="4" Grid.Column="0" Style="{StaticResource SettingHeader}" Text="{StaticResource Maxplayers:}"/>
                                 <TextBox x:Name="txt_Maxplayers"  Grid.Row="4" Grid.Column="1" Style="{StaticResource SettingTextBox}" />
-                                
-                                <TextBlock Grid.Row="0" Grid.Column="3" Style="{StaticResource SettingHeader}">Header image (URL):</TextBlock>
+                                <TextBlock Grid.Row="0" Grid.Column="3" Style="{StaticResource SettingHeader}" Text="{StaticResource Headerimage:}"/>
                                 <TextBox x:Name="txt_Headerimage" Grid.Row="0" Grid.Column="4" Style="{StaticResource SettingTextBox}"/>
-                                
-                                <TextBlock Grid.Row="2" Grid.Column="3" Style="{StaticResource SettingHeader}">Homepage (URL):</TextBlock>
+                                <TextBlock Grid.Row="2" Grid.Column="3" Style="{StaticResource SettingHeader}" Text="{StaticResource Homepage:}"/>
                                 <TextBox x:Name="txt_Url" Grid.Row="2" Grid.Column="4" Style="{StaticResource SettingTextBox}"/>
-                                
-                                <TextBlock Grid.Row="4" Grid.Column="3" Style="{StaticResource SettingHeader}">World size:</TextBlock>
+                                <TextBlock Grid.Row="4" Grid.Column="3" Style="{StaticResource SettingHeader}" Text="{StaticResource World size:}"/>
                                 <TextBox x:Name="txt_Worldsize"  Grid.Row="4" Grid.Column="4" Style="{StaticResource SettingTextBox}" />
-                                
-                                <TextBlock Grid.Row="6" Grid.Column="0" Style="{StaticResource SettingHeader}">Description:</TextBlock>
+                                <TextBlock Grid.Row="6" Grid.Column="0" Style="{StaticResource SettingHeader}" Text="{StaticResource Description:}"/>
                                 <TextBox x:Name="txt_Description" Grid.Row="6" Grid.RowSpan="4" Grid.Column="1" Grid.ColumnSpan="4" Margin="0,0,0,10" FontWeight="Normal" TextWrapping="Wrap"/>
                             </Grid>
                         </Border>
                     </TabItem>
-                    <TabItem Header="RCON">
+                    <TabItem Header="{StaticResource RCON:}">
                         <Border BorderBrush="Transparent" BorderThickness="5">
                             <Grid>
                                 <Grid.RowDefinitions>
@@ -259,20 +140,20 @@
                                     <ColumnDefinition Width="10"/>
                                     <ColumnDefinition Width="140"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource SettingHeader}">Enabled:</TextBlock>
+                                <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource SettingHeader}" Text="{StaticResource Enabled:}"/>
                                 <CheckBox x:Name="chk_RCONenabled" Grid.Row="0" Grid.Column="1" IsChecked="False" VerticalAlignment="Center" HorizontalAlignment="Left">
                                     <CheckBox.LayoutTransform>
                                         <ScaleTransform ScaleX="1.2" ScaleY="1.2"/>
                                     </CheckBox.LayoutTransform>
                                 </CheckBox>
-                                <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource SettingHeader}">Port:</TextBlock>
+                                <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource SettingHeader}" Text="{StaticResource Port:}"/>
                                 <TextBox x:Name="txt_RCONport" Grid.Row="2" Grid.Column="1" Style="{StaticResource SettingTextBox}"/>
-                                <TextBlock Grid.Row="4" Grid.Column="0" Style="{StaticResource SettingHeader}">Password:</TextBlock>
-                                <PasswordBox x:Name="txt_RCONpassword" Grid.Row="4" Grid.Column="1" Style="{StaticResource SettingPasswordBox}"/>
+                                <TextBlock Grid.Row="4" Grid.Column="0" Style="{StaticResource SettingHeader}" Text="{StaticResource Password:}"/>
+                                <PasswordBox x:Name="txt_RCONpassword" Grid.Row="4" Grid.Column="1" Style="{StaticResource SettingPassord}"/>
                             </Grid>
                         </Border>
                     </TabItem>
-                    <TabItem Name="tab_Plugins" Header="Plugins" IsEnabled="False">
+                    <TabItem Name="tab_Plugins" Header="{StaticResource Plugins:}" IsEnabled="False">
                         <Border BorderBrush="Transparent" BorderThickness="5" MinHeight="350">
                             <DockPanel>
                                 <DockPanel DockPanel.Dock="Bottom" Height="200" Visibility="Collapsed">
@@ -288,8 +169,8 @@
                                         <RowDefinition Height="20"/>
                                         <RowDefinition Height="*"/>
                                     </Grid.RowDefinitions>
-                                    <TextBlock Grid.Column="0" Grid.Row="0" Text="Activated" HorizontalAlignment="Center"/>
-                                    <TextBlock Grid.Column="2" Grid.Row="0" Text="Deactivated" HorizontalAlignment="Center"/>
+                                    <TextBlock Grid.Column="0" Grid.Row="0" Text="{StaticResource Activated}" HorizontalAlignment="Center"/>
+                                    <TextBlock Grid.Column="2" Grid.Row="0" Text="{StaticResource Deactivated}" HorizontalAlignment="Center"/>
                                     <Button x:Name="btn_TogglePluginActivation" Grid.Column="1" Grid.Row="1" Style="{StaticResource Btn_Template}" Margin="0" Height="40" Background="{StaticResource DangerRed}" IsEnabled="false" Click="btn_TogglePluginActivation_Click">
                                         <Image Source="Images/icon_Swap.png"/>
                                     </Button>
@@ -298,19 +179,13 @@
                                         <ListBox  BorderBrush="{DynamicResource BorderDarkGreen}" x:Name="list_Plugins" BorderThickness="2" Background="{StaticResource BorderDarkGreen}" Foreground="White" AllowDrop="True" SelectionMode="Extended" DragEnter="list_Plugins_DragEnter" DragLeave="list_Plugins_DragLeave" Drop="list_Plugins_Drop" SelectionChanged="list_Plugins_SelectionChanged"/>
                                     </Border>
                                     <Border BorderThickness="1,0,0,0" BorderBrush="{StaticResource InfoBlue}" DockPanel.Dock="Right" Grid.Column="2" Grid.Row="1">
-                                        <ListBox IsEnabled="True" BorderBrush="{DynamicResource BorderDarkGreen}" x:Name="list_DeactivatedPlugins" BorderThickness="2" Background="{StaticResource BorderDarkGreen}" Foreground="White" AllowDrop="True" SelectionMode="Extended" DragEnter="list_Plugins_DragEnter" DragLeave="list_Plugins_DragLeave" Drop="list_Plugins_Drop" SelectionChanged="list_Plugins_SelectionChanged">
-                                            <TextBlock>Deactivation</TextBlock>
-                                            <TextBlock>not</TextBlock>
-                                            <TextBlock>implemented</TextBlock>
-                                            <TextBlock>yet</TextBlock>
-                                            <TextBlock>:-)</TextBlock>
-                                        </ListBox>
+                                        <ListBox IsEnabled="True" BorderBrush="{DynamicResource BorderDarkGreen}" x:Name="list_DeactivatedPlugins" BorderThickness="2" Background="{StaticResource BorderDarkGreen}" Foreground="White" AllowDrop="True" SelectionMode="Extended" DragEnter="list_Plugins_DragEnter" DragLeave="list_Plugins_DragLeave" Drop="list_Plugins_Drop" SelectionChanged="list_Plugins_SelectionChanged"/>
                                     </Border>
                                 </Grid>
                             </DockPanel>
                         </Border>
                     </TabItem>
-                    <TabItem Header="Advanced">
+                    <TabItem Header="{StaticResource Advanced:}">
                         <Border BorderBrush="Transparent" BorderThickness="5">
                             <Grid>
                                 <Grid.RowDefinitions>
@@ -328,15 +203,18 @@
                                     <ColumnDefinition Width="110"/>
                                     <ColumnDefinition Width="140"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource SettingHeader}">Port:</TextBlock>
+                                <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource SettingHeader}" Text="{StaticResource Port:}"/>
                                 <TextBox x:Name="txt_Serverport" Grid.Row="0" Grid.Column="1" Style="{StaticResource SettingTextBox}" />
-                                <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource SettingHeader}">Tickrate:</TextBlock>
+                                <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource SettingHeader}" Text="{StaticResource Tickrate:}"/>
                                 <TextBox x:Name="txt_Tickrate" Grid.Row="2" Grid.Column="1" Style="{StaticResource SettingTextBox}" />
-                                <TextBlock Grid.Row="0" Grid.Column="3" Style="{StaticResource SettingHeader}">Save Interval:</TextBlock>
+                                <TextBlock Grid.Row="0" Grid.Column="3" Style="{StaticResource SettingHeader}" Text="{StaticResource Saveinterval:}"/>
                                 <TextBox x:Name="txt_Saveinterval" Grid.Row="0" Grid.Column="4" Style="{StaticResource SettingTextBox}"/>
-                                <TextBlock Grid.Row="4" Grid.Column="0" Style="{StaticResource SettingHeader}">Custom arguments:</TextBlock>
-                                <TextBox x:Name="txt_Customarguments" Grid.Row="4" Grid.Column="1" Style="{StaticResource SettingTextBox}"/>
-                                <TextBlock Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="3" Margin="5,0,0,0" FontStyle="Italic"> +server.entityrate 16 </TextBlock>
+                                <TextBlock Grid.Row="4" Grid.Column="0" Style="{StaticResource SettingHeader}" Text="{StaticResource Customarguments:}"/>
+                                <StackPanel Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="4" Orientation="Horizontal">
+                                    <TextBox x:Name="txt_Customarguments" Style="{StaticResource SettingTextBox}" Width="280"/>
+                                    <TextBlock  Margin="5,0,0,0" FontStyle="Italic" Text="{StaticResource Customargumentsdescription}"/>
+
+                                </StackPanel>
                             </Grid>
                         </Border>
                     </TabItem>
@@ -366,16 +244,16 @@
                 </TabControl>
             </DockPanel>
         </Border>
-        <Border x:Name="Window_Running" Grid.Row="2" Grid.Column="1" BorderBrush="{StaticResource BorderDarkGreen}" Background="{StaticResource BorderDarkGreen}" BorderThickness="8" Visibility="Collapsed">
+        <Border x:Name="Window_Running" Grid.Row="2" Grid.Column="1" BorderBrush="{StaticResource BorderDarkGreen}" Background="{StaticResource BorderDarkGreen}" BorderThickness="8">
             <DockPanel>
                 <Button x:Name="btn_RustConsole" DockPanel.Dock="Bottom" Style="{StaticResource Btn_Template}" Width="50" Background="{StaticResource DangerRed}" Foreground="{StaticResource DangerRed_Highlighted}" HorizontalAlignment="Left" ToolTip="Toggle Rust Server Console" Click="btn_RustConsole_Click" IsEnabled="False">
                     <Image Source="Images/icon_Rust.png"/>
                 </Button>
                 <StackPanel DockPanel.Dock="Bottom" Height="40" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,-40">
-                    <Button x:Name="btn_SendCommand" Style="{StaticResource Btn_Template}" Width="60"    Background="{StaticResource SuccessGreen}"    Foreground="{StaticResource SuccessGreen_Highlighted}" IsEnabled="False" Click="SendConsoleCommand" Visibility="Hidden">Send</Button>
+                    <Button x:Name="btn_SendCommand" Style="{StaticResource Btn_Template}" Width="60"    Background="{StaticResource SuccessGreen}"    Foreground="{StaticResource SuccessGreen_Highlighted}" IsEnabled="False" Click="SendConsoleCommand" Visibility="Hidden" Content="{StaticResource Send}"/>
                     <TextBox x:Name="txt_CommandBox" Width="260" Margin="0,0,8,0" UndoLimit="97" Padding="5,8,2,0" FontSize="16" IsEnabled="False" KeyUp="txt_CommandBox_KeyUp" Visibility="Hidden"/>
-                    <Button x:Name="btn_RestartServer" Style="{StaticResource Btn_Template}" Width="120"   Background="{StaticResource InfoBlue}"     Foreground="{StaticResource InfoBlue_Highlighted}" IsEnabled="False" Click="btn_RestartServer_Click">Restart</Button>
-                    <Button x:Name="btn_StopServer" Style="{StaticResource Btn_Template}" Width="60"    Background="{StaticResource DangerRed}"    Foreground="{StaticResource DangerRed_Highlighted}" IsEnabled="False" Click="btn_StopServer_Click" >Stop</Button>
+                    <Button x:Name="btn_RestartServer" Style="{StaticResource Btn_Template}" Width="120"   Background="{StaticResource InfoBlue}"     Foreground="{StaticResource InfoBlue_Highlighted}" IsEnabled="False" Click="btn_RestartServer_Click" Content="{StaticResource Restart}"/>
+                    <Button x:Name="btn_StopServer" Style="{StaticResource Btn_Template}" Width="60"    Background="{StaticResource DangerRed}"    Foreground="{StaticResource DangerRed_Highlighted}" IsEnabled="False" Click="btn_StopServer_Click" Content="{StaticResource Stop}" />
                 </StackPanel>
                 <TabControl x:Name="tabs_Server_Running" DockPanel.Dock="Top" Background="Transparent" BorderThickness="0" SelectionChanged="tabs_Server_Running_SelectionChanged">
                     <TabControl.Resources>
@@ -438,9 +316,26 @@
                     <TabItem x:Name="tab_Chat" Header="Chat">
                         <TextBox x:Name="log_Chat" IsReadOnly="True"  Margin="2,8,2,2" Padding="0" VerticalScrollBarVisibility="Visible"/>
                     </TabItem>
+                    <TabItem Header="Players">
+                        <DockPanel>
+                            <DockPanel Width="140" DockPanel.Dock="Right">
+                                <StackPanel Margin="0,8,8,8" DockPanel.Dock="Top" Orientation="Horizontal">
+                                    <TextBlock Margin="0,0,4,0">Players: </TextBlock>
+                                    <TextBlock x:Name="txt_Playercount">0</TextBlock>
+                                    
+                                </StackPanel>
+                                <ListBox x:Name="list_Players" DockPanel.Dock="Bottom" Background="{StaticResource BorderDarkGreen}" Foreground="White" ItemTemplate="{StaticResource TemplatePlayer}" Margin="0,0,6,8" BorderBrush="{StaticResource InfoBlue}" LayoutUpdated="list_Players_LayoutUpdated"/>
+                            </DockPanel>
+                            <Border DockPanel.Dock="Left" Margin="0,8,8,8" BorderBrush="{StaticResource InfoBlue}" BorderThickness="1">
+                            </Border>
+                        </DockPanel>
+                    </TabItem>
                 </TabControl>
             </DockPanel>
         </Border>
-        <TextBlock Grid.Column="2" Grid.Row="3" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="16,8" Foreground="{StaticResource SuccessGreen}" FontWeight="Bold" FontSize="10">v0.0.36 ALPHA</TextBlock>
+        <StackPanel Margin="10,8" Grid.Column="2" Grid.Row="3" VerticalAlignment="Bottom" HorizontalAlignment="Right" Orientation="Horizontal">
+            <TextBlock Foreground="{StaticResource SuccessGreen}" FontWeight="Bold" FontSize="10">v</TextBlock>
+            <TextBlock Foreground="{StaticResource SuccessGreen}" FontWeight="Bold" FontSize="10" Text="{StaticResource AppVersion}"/>
+        </StackPanel>
     </Grid>
 </Window>
