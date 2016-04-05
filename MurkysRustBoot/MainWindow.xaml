@@ -25,12 +25,9 @@
         <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="16,0,0,0">
             <Image x:Name="img_RustLogo" Style="{StaticResource Img_HoverTemplate}" Height="25" Source="Images/logo_Rust.png" Cursor="Hand" MouseDown="img_RustLogo_MouseDown"></Image>
             <Image x:Name="img_OxideLogo" Style="{StaticResource Img_HoverTemplate}" Height="30" Source="Images/logo_Oxide.png" Cursor="Hand" Margin="8,0,0,0" MouseDown="img_OxideLogo_MouseDown"></Image>
-            
         </StackPanel>
-
         <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal" Background="{StaticResource BorderDarkGreen}">
             <TextBlock VerticalAlignment="Center" Margin="5" Foreground="#fbebe0" FontWeight="Bold" FontSize="14" Text="{StaticResource AppName}"/>
-
         </StackPanel>
         <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right"  Height="20">
             <Button x:Name="btn_Report" FontSize="12" FontWeight="Black" Style="{StaticResource Btn_Template}" Background="{StaticResource SuccessGreen}" Height="20" Width="20" ToolTip="Report bug" Click="btn_Report_Click">
@@ -218,7 +215,6 @@
                             </Grid>
                         </Border>
                     </TabItem>
-                    
                     <TabItem Header="Misc" Visibility="Collapsed">
                         <Border BorderBrush="Transparent" BorderThickness="5">
                             <Grid>
@@ -250,8 +246,6 @@
                     <Image Source="Images/icon_Rust.png"/>
                 </Button>
                 <StackPanel DockPanel.Dock="Bottom" Height="40" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,-40">
-                    <Button x:Name="btn_SendCommand" Style="{StaticResource Btn_Template}" Width="60"    Background="{StaticResource SuccessGreen}"    Foreground="{StaticResource SuccessGreen_Highlighted}" IsEnabled="False" Click="SendConsoleCommand" Visibility="Hidden" Content="{StaticResource Send}"/>
-                    <TextBox x:Name="txt_CommandBox" Width="260" Margin="0,0,8,0" UndoLimit="97" Padding="5,8,2,0" FontSize="16" IsEnabled="False" KeyUp="txt_CommandBox_KeyUp" Visibility="Hidden"/>
                     <Button x:Name="btn_RestartServer" Style="{StaticResource Btn_Template}" Width="120"   Background="{StaticResource InfoBlue}"     Foreground="{StaticResource InfoBlue_Highlighted}" IsEnabled="False" Click="btn_RestartServer_Click" Content="{StaticResource Restart}"/>
                     <Button x:Name="btn_StopServer" Style="{StaticResource Btn_Template}" Width="60"    Background="{StaticResource DangerRed}"    Foreground="{StaticResource DangerRed_Highlighted}" IsEnabled="False" Click="btn_StopServer_Click" Content="{StaticResource Stop}" />
                 </StackPanel>
@@ -320,9 +314,9 @@
                         <DockPanel>
                             <DockPanel Width="140" DockPanel.Dock="Right">
                                 <StackPanel Margin="0,8,8,8" DockPanel.Dock="Top" Orientation="Horizontal">
-                                    <TextBlock Margin="0,0,4,0">Players: </TextBlock>
+                                    <TextBlock Margin="0,0,4,0">Players:</TextBlock>
                                     <TextBlock x:Name="txt_Playercount">0</TextBlock>
-                                    
+
                                 </StackPanel>
                                 <ListBox x:Name="list_Players" DockPanel.Dock="Bottom" Background="{StaticResource BorderDarkGreen}" Foreground="White" ItemTemplate="{StaticResource TemplatePlayer}" Margin="0,0,6,8" BorderBrush="{StaticResource InfoBlue}" LayoutUpdated="list_Players_LayoutUpdated"/>
                             </DockPanel>

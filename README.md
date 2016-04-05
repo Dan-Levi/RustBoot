@@ -11,7 +11,8 @@ Murky's RustBoot is a small but powerful portable server utility and launcher th
 * Warning
 * Error
 * EAC
-5. Realtime monitoring of chat messages
+5. Realtime monitoring of chat
+6. Realtime monitoring of players
 
 ## Motivation
 
