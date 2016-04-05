@@ -256,7 +256,7 @@ namespace MurkysRustBoot
                     {
                         if (Settings.RCONport == 0 || string.IsNullOrEmpty(Settings.RCONpassword))
                         {
-                            MessageBox.Show("RCON port must be specified.");
+                            MessageBox.Show("RCON port and passord must be specified.");
                         }
                         else
                         {
@@ -565,9 +565,7 @@ namespace MurkysRustBoot
                 RefreshPluginLists();
             }
         }
-
         
-
         private void list_Plugins_DragEnter(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
@@ -875,7 +873,7 @@ namespace MurkysRustBoot
             if (Settings.RCONenabled)
             {
                 arguments += " +rcon.port " + Settings.RCONport + " ";
-                arguments += " +rcon.password " + Settings.RCONport + " ";
+                arguments += " +rcon.password " + Settings.RCONpassword + " ";
             }
             arguments += " +server.hostname \"" + Settings.Hostname + "\" ";
             if (!string.IsNullOrEmpty(Settings.Identity))
@@ -1025,13 +1023,7 @@ namespace MurkysRustBoot
                 stack_Btns_Settings_Lower.Margin = new Thickness(0, 0, 0, 0);
             }
         }
-
-
-
-
-
-
-
+        
         #endregion
 
         #region Helpers

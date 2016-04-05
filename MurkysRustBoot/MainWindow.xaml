@@ -50,7 +50,7 @@
         </StackPanel>
         <Button x:Name="btn_SaveSettings" Grid.Row="1" Grid.Column="1" Style="{StaticResource Btn_Template}" Width="60" Height="25" Margin="0,0,68,8"    Background="{StaticResource SuccessGreen}" Foreground="{StaticResource SuccessGreen_Highlighted}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Click="btn_SaveSettings_Click" Content="{StaticResource Save}"/>
         <Button x:Name="btn_ResetSettings" Grid.Row="1" Grid.Column="1" Style="{StaticResource Btn_Template}" Width="60" Height="25"    Background="{StaticResource DangerOrange}" Foreground="{StaticResource DangerOrange_Highlighted}" Margin="0,0,0,8" VerticalAlignment="Bottom" HorizontalAlignment="Right" Click="btn_ResetSettings_Click" Content="{StaticResource Reset}"/>
-        <Border x:Name="Window_Settings" Grid.Row="2" Grid.Column="1" BorderBrush="{StaticResource BorderDarkGreen}" Background="{StaticResource BorderDarkGreen}" BorderThickness="8" Visibility="Collapsed">
+        <Border x:Name="Window_Settings" Grid.Row="2" Grid.Column="1" BorderBrush="{StaticResource BorderDarkGreen}" Background="{StaticResource BorderDarkGreen}" BorderThickness="8">
             <DockPanel LastChildFill="False">
                 <Button x:Name="btn_DeletePlugins" DockPanel.Dock="Bottom" Style="{StaticResource Btn_Template}" Width="50" Background="{StaticResource DangerRed}" Foreground="{StaticResource DangerRed_Highlighted}" HorizontalAlignment="Left" ToolTip="Delete selected plugin(s)" Margin="100,0,0,0" Visibility="Collapsed" IsEnabled="False" Click="btn_DeletePlugins_Click">
                     <Image Source="Images/icon_Trashcan.png" AllowDrop="True"/>
@@ -172,10 +172,10 @@
                                         <Image Source="Images/icon_Swap.png"/>
                                     </Button>
                                     <TextBlock x:Name="txt_PluginsDragMessage" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Left" Foreground="White" IsHitTestVisible="False">Drag and drop &#8595;</TextBlock>
-                                    <Border BorderThickness="0,0,1,0" BorderBrush="{StaticResource InfoBlue}" DockPanel.Dock="Left" Grid.Column="0" Grid.Row="1">
+                                    <Border BorderThickness="1" BorderBrush="{StaticResource InfoBlue}" DockPanel.Dock="Left" Grid.Column="0" Grid.Row="1" Margin="-6,0,8,0">
                                         <ListBox  BorderBrush="{DynamicResource BorderDarkGreen}" x:Name="list_Plugins" BorderThickness="2" Background="{StaticResource BorderDarkGreen}" Foreground="White" AllowDrop="True" SelectionMode="Extended" DragEnter="list_Plugins_DragEnter" DragLeave="list_Plugins_DragLeave" Drop="list_Plugins_Drop" SelectionChanged="list_Plugins_SelectionChanged"/>
                                     </Border>
-                                    <Border BorderThickness="1,0,0,0" BorderBrush="{StaticResource InfoBlue}" DockPanel.Dock="Right" Grid.Column="2" Grid.Row="1">
+                                    <Border BorderThickness="1" BorderBrush="{StaticResource InfoBlue}" DockPanel.Dock="Right" Grid.Column="2" Grid.Row="1" Margin="8,0,-6,0">
                                         <ListBox IsEnabled="True" BorderBrush="{DynamicResource BorderDarkGreen}" x:Name="list_DeactivatedPlugins" BorderThickness="2" Background="{StaticResource BorderDarkGreen}" Foreground="White" AllowDrop="True" SelectionMode="Extended" DragEnter="list_Plugins_DragEnter" DragLeave="list_Plugins_DragLeave" Drop="list_Plugins_Drop" SelectionChanged="list_Plugins_SelectionChanged"/>
                                     </Border>
                                 </Grid>
@@ -240,7 +240,7 @@
                 </TabControl>
             </DockPanel>
         </Border>
-        <Border x:Name="Window_Running" Grid.Row="2" Grid.Column="1" BorderBrush="{StaticResource BorderDarkGreen}" Background="{StaticResource BorderDarkGreen}" BorderThickness="8">
+        <Border x:Name="Window_Running" Grid.Row="2" Grid.Column="1" BorderBrush="{StaticResource BorderDarkGreen}" Background="{StaticResource BorderDarkGreen}" BorderThickness="8" Visibility="Collapsed">
             <DockPanel>
                 <Button x:Name="btn_RustConsole" DockPanel.Dock="Bottom" Style="{StaticResource Btn_Template}" Width="50" Background="{StaticResource DangerRed}" Foreground="{StaticResource DangerRed_Highlighted}" HorizontalAlignment="Left" ToolTip="Toggle Rust Server Console" Click="btn_RustConsole_Click" IsEnabled="False">
                     <Image Source="Images/icon_Rust.png"/>
