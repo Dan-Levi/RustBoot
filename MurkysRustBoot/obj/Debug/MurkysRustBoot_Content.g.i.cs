@@ -8,6 +8,6 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/logo_oxide.png")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("dlls/newtonsoft.json.dll")]
 
 

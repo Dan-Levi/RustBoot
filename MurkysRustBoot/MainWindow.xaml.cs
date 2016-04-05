@@ -94,7 +94,6 @@ namespace MurkysRustBoot
             else
             {
                 DeleteCorePlugin();
-
                 if (serverProcess != null && serverProcess.MainWindowHandle != IntPtr.Zero)
                 {
                     serverProcess.CloseMainWindow();
@@ -404,13 +403,10 @@ namespace MurkysRustBoot
                 Directory.CreateDirectory(PluginDirectory);
             if (!File.Exists(Path.Combine(PluginDirectory, "MurkysCore.cs")))
             {
-                using (FileStream fileStream = File.Create(Path.Combine(PluginDirectory, "MurkysCore.cs")))
-                {
-                    Assembly.GetExecutingAssembly().GetManifestResourceStream("MurkysRustBoot.Plugins.MurkysCore.cs").CopyTo(fileStream);
-                }
+                CopyEmbeddedResource("Plugins.MurkysCore.cs", Path.Combine(PluginDirectory, "MurkysCore.cs"));
             }
         }
-
+        
         private void DeleteCorePlugin()
         {
             if (!string.IsNullOrEmpty(Properties.Settings.Default.Identity))
@@ -829,7 +825,17 @@ namespace MurkysRustBoot
         private void InitLaunch()
         {
             SwitchWindowLayout(ServerState.RUNNING);
+            CheckForNewtonsoftJSON();
             StartServerThread();
+        }
+
+        private void CheckForNewtonsoftJSON()
+        {
+            var destinationfolder = Path.Combine(Environment.CurrentDirectory, "Newtonsoft.Json.dll");
+            if (!File.Exists(destinationfolder))
+            {
+                CopyEmbeddedResource("DLLs.Newtonsoft.Json.dll", destinationfolder);
+            }
         }
 
         private void tabs_Server_Running_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -1038,6 +1044,19 @@ namespace MurkysRustBoot
                 {
                     yield return line;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Copies embedded resource to given path
+        /// </summary>
+        /// <param name="source">example: Plugins.MurkysCore.cs</param>
+        /// <param name="destination">Full path with filename</param>
+        void CopyEmbeddedResource(string source, string destination)
+        {
+            using (FileStream fileStream = File.Create(destination))
+            {
+                Assembly.GetExecutingAssembly().GetManifestResourceStream("MurkysRustBoot." + source).CopyTo(fileStream);
             }
         }
 
