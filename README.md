@@ -8,9 +8,6 @@ Murky's RustBoot is a small but powerful portable server utility and launcher th
 2. Easy setup of boot arguments in an intuitive user interface
 3. Drag and drop and activation, deactivation of plugins
 4. Realtime monitoring of logs
-* Warning
-* Error
-* EAC
 5. Realtime monitoring of chat
 6. Realtime monitoring of players
 
