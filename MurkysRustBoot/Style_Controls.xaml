@@ -70,4 +70,8 @@
             </Trigger>
         </Style.Triggers>
     </Style>
+    <Style x:Key="PlayerInfoField" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+        <Setter Property="HorizontalAlignment" Value="Center"></Setter>
+        <Setter Property="HorizontalAlignment" Value="Center"></Setter>
+    </Style>
 </ResourceDictionary>

@@ -71,6 +71,9 @@
       <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="QueryMaster">
+      <HintPath>C:\Users\DanHovedPC\Downloads\QueryMaster\Binaries\QueryMaster.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -202,6 +205,19 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="DLLs\Newtonsoft.Json.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\icon_Ban.png" />
+    <Resource Include="Images\icon_Kick.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\icon_Moderator.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="DLLs\QueryMaster.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="DLLs\Ionic.BZip2.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

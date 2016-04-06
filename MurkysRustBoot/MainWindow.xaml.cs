@@ -2,6 +2,8 @@
 using MurkysRustBoot.Classes;
 using MurkysRustBoot.Properties;
 using Newtonsoft.Json;
+using QueryMaster;
+using QueryMaster.GameServer;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -9,6 +11,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -72,6 +75,10 @@ namespace MurkysRustBoot
                         Settings.Save();
                         CheckSettings();
                     }
+                    else
+                    {
+                        btn_SaveSettings.IsEnabled = false;
+                    }
                 }
             }
         }
@@ -94,9 +101,18 @@ namespace MurkysRustBoot
             else
             {
                 DeleteCorePlugin();
-                if (serverProcess != null && serverProcess.MainWindowHandle != IntPtr.Zero)
+                SaveSettings();
+                if (RCONConnected && RCONCheckConnection())
                 {
-                    serverProcess.CloseMainWindow();
+                    Console.WriteLine("RCON detected while restarting.");
+                    RCONSendCommand("quit", true);
+                }
+                else
+                {
+                    if (serverProcess != null && serverProcess.MainWindowHandle != IntPtr.Zero)
+                    {
+                        serverProcess.CloseMainWindow();
+                    }
                 }
             }
         }
@@ -137,17 +153,6 @@ namespace MurkysRustBoot
                 FileName = "mailto:post@dan-levi.no?subject=MurkysRustBoot"
             });
         }
-
-
-
-
-
-
-
-
-
-
-
 
 
         #endregion
@@ -203,6 +208,8 @@ namespace MurkysRustBoot
 
         void DefaultSettings()
         {
+            tab_Plugins.IsEnabled = false;
+            btn_SaveSettings.IsEnabled = false;
             var DefaultSettings = new Classes.Settings();
             var Settings = Properties.Settings.Default;
             Settings.Serverport = DefaultSettings.Serverport;
@@ -249,13 +256,14 @@ namespace MurkysRustBoot
             if (!string.IsNullOrEmpty(Settings.Rustserverexecutable))
             {
                 tab_Plugins.IsEnabled = true;
+                btn_SaveSettings.IsEnabled = true;
                 if (!string.IsNullOrEmpty(Settings.Hostname) && Settings.Maxplayers > 0 && Settings.Worldsize > 0 && Settings.Seed.ToString().Length == 5)
                 {
                     if (Settings.RCONenabled)
                     {
                         if (Settings.RCONport == 0 || string.IsNullOrEmpty(Settings.RCONpassword))
                         {
-                            MessageBox.Show("RCON port and passord must be specified.");
+                            Settings.RCONpassword = Randomstring(6);
                         }
                         else
                         {
@@ -272,7 +280,7 @@ namespace MurkysRustBoot
                 }
                 else
                 {
-                    MessageBox.Show("Error detected in General tab. Revert to defaults if in doubt.");
+                    MessageBox.Show("Error detected in General tab.\nCheck that seed is 5 digits.\nRevert to defaults if in doubt.");
                     btn_StartServer.IsEnabled = false;
                 }
             }
@@ -293,7 +301,7 @@ namespace MurkysRustBoot
 
         private void btn_Seed_Click(object sender, RoutedEventArgs e)
         {
-            txt_Seed.Text = (new Random()).Next(00000, 99999).ToString("D5");
+            txt_Seed.Text = (new Random()).Next(10000, 99999).ToString("D5");
         }
 
         void SwitchWindowLayout(ServerState layoutType)
@@ -372,6 +380,95 @@ namespace MurkysRustBoot
             txt_Playercount.Text = _players != null ? _players.Count.ToString() : txt_Playercount.Text;
         }
 
+        private void list_Players_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            btn_Icon_Ban.IsEnabled = false;
+            btn_Icon_Kick.IsEnabled = false;
+            btn_Icon_Moderator.IsEnabled = false;
+            btn_Icon_Un_Moderator.IsEnabled = false;
+            if (e.Source is ListBox)
+            {
+                Player player = (sender as ListBox).SelectedItem as Player;
+                if (player != null)
+                {
+                    txt_Players_Info_Username.Text = player.DisplayName;
+                    txt_Players_Info_UserID.Text = player.UserID.ToString();
+                    txt_Players_Info_IP_Adress.Text = player.IpAdress;
+                    btn_Icon_Ban.IsEnabled = true;
+                    btn_Icon_Kick.IsEnabled = true;
+                    btn_Icon_Moderator.IsEnabled = true;
+                    btn_Icon_Un_Moderator.IsEnabled = true;
+                    Console.WriteLine("Chat is now private with " + player.DisplayName);
+                    chatMode = ChatMode.Private;
+                    ConsoleInputMode(ChatMode.Private);
+                    chatSessionPlayer = player;
+                }
+            }
+        }
+
+
+        private void btn_Icon_Kick_Click(object sender, RoutedEventArgs e)
+        {
+            Player player = list_Players.SelectedItem as Player;
+            if (player != null)
+            {
+                if (MessageBox.Show("Kick " + player.DisplayName + "?", "Kick player?", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                {
+                    if (RCONConnected && RCONCheckConnection())
+                    {
+                        RCONSendCommand("kick " + player.UserID + " \"" + player.DisplayName + "\"", true);
+                    }
+                }
+            }
+        }
+
+        private void btn_Icon_Ban_Click(object sender, RoutedEventArgs e)
+        {
+            Player player = list_Players.SelectedItem as Player;
+            if (player != null)
+            {
+                if (MessageBox.Show("Ban " + player.DisplayName + "?", "Ban player?", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                {
+                    if (RCONConnected && RCONCheckConnection())
+                    {
+                        RCONSendCommand("ban " + player.UserID + " \"" + player.DisplayName + "\"", true);
+                    }
+                }
+            }
+        }
+
+        private void btn_Icon_Moderator_Click(object sender, RoutedEventArgs e)
+        {
+            Player player = list_Players.SelectedItem as Player;
+            if (player != null)
+            {
+                if (MessageBox.Show("Make " + player.DisplayName + " moderator?", "Make player moderator?", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                {
+                    if (RCONConnected && RCONCheckConnection())
+                    {
+                        RCONSendCommand("moderatorid " + player.UserID + " \"" + player.DisplayName + "\"", true);
+                        RCONSendCommand("kick " + player.UserID + " \"" + player.DisplayName + "\" " + "\"" + "moderation privileges granted.\"");
+                    }
+                }
+            }
+        }
+
+        private void btn_Icon_Un_Moderator_Click(object sender, RoutedEventArgs e)
+        {
+            Player player = list_Players.SelectedItem as Player;
+            if (player != null)
+            {
+                if (MessageBox.Show("Remove moderation privileges for " + player.DisplayName + "?", "Remove moderation privileges?", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                {
+                    if (RCONConnected && RCONCheckConnection())
+                    {
+                        RCONSendCommand("removemoderator " + player.UserID, true);
+                        RCONSendCommand("kick " + player.UserID + " \"" + player.DisplayName + "\" " + "\"" + "moderation privileges revoked by admin.\"");
+                    }
+                }
+            }
+        }
+
         #endregion
 
         #region Plugins
@@ -406,10 +503,10 @@ namespace MurkysRustBoot
                 CopyEmbeddedResource("Plugins.MurkysCore.cs", Path.Combine(PluginDirectory, "MurkysCore.cs"));
             }
         }
-        
+
         private void DeleteCorePlugin()
         {
-            if (!string.IsNullOrEmpty(Properties.Settings.Default.Identity))
+            if (!string.IsNullOrEmpty(Properties.Settings.Default.Rustserverexecutable) && !string.IsNullOrEmpty(Properties.Settings.Default.Identity))
             {
                 PluginDirectory = Path.Combine(new string[] {
                     Path.GetDirectoryName(Properties.Settings.Default.Rustserverexecutable),
@@ -561,7 +658,7 @@ namespace MurkysRustBoot
                 RefreshPluginLists();
             }
         }
-        
+
         private void list_Plugins_DragEnter(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
@@ -711,7 +808,10 @@ namespace MurkysRustBoot
         {
             var lastLine = ReadLines(path).Last();
             if (lastLine.Contains("Connected to Steam"))
+            {
                 EnableConsole();
+                RCONInitConnect();
+            }
             if (lastLine.Contains("Couldn't Start Server."))
             {
                 serverProcess.CloseMainWindow();
@@ -729,25 +829,28 @@ namespace MurkysRustBoot
                 int newLinesCount = totalLines - LogFilesReadCount[logFileName];
                 var logPart = ReadLines(logFilefullPath).Skip(LogFilesReadCount[logFileName]).Take(newLinesCount).ToArray();
                 LogFilesReadCount[logFileName] = totalLines;
-                for (int i = 0; i < logPart.Length; i++)
+                if (logPart.Length > 0)
                 {
-                    if (!logPart[i].Contains("[Info] [Murkys Core] |||JSON|||") && !string.IsNullOrEmpty(logPart[i]))
+                    for (int i = 0; i < logPart.Length; i++)
                     {
-                        logFileTextBox.AppendText(logPart[i] + "\n");
+                        if (!logPart[i].Contains("[Info] [Murkys Core] |||JSON|||") && !string.IsNullOrEmpty(logPart[i]))
+                        {
+                            logFileTextBox.AppendText(logPart[i] + "\n");
+                        }
+                        else
+                        {
+                            ParseCorePluginMessage(logPart[i]);
+                        }
                     }
-                    else
-                    {
-                        ParseCorePluginMessage(logPart[i]);
-                    }
+                    logFileTextBox.ScrollToEnd();
                 }
-                logFileTextBox.ScrollToEnd();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Ops! " + ex.Message + "\n\nPlease report back to author: post@dan-levi.no");
+                MessageBox.Show("[UpdateLog] Ops! " + ex.Message + "\n\nPlease report back to author: post@dan-levi.no");
             }
         }
-        
+
         private void UpdateLog(TextBox logFileTextBox, string logFileName, string logFilefullPath, bool manualUpdate)
         {
             try
@@ -756,14 +859,17 @@ namespace MurkysRustBoot
                 {
                     logFileTextBox.Clear();
                     var log = File.ReadAllLines(Path.Combine(logFilefullPath, logFileName));
-                    for (int i = 0; i < log.Length; i++)
+                    if (log.Length > 0)
                     {
-                        if (!log[i].Contains("[Info] [Murkys Core] |||JSON|||") && !string.IsNullOrEmpty(log[i]))
+                        for (int i = 0; i < log.Length; i++)
                         {
-                            logFileTextBox.AppendText(log[i] + "\n");
+                            if (!log[i].Contains("[Info] [Murkys Core] |||JSON|||") && !string.IsNullOrEmpty(log[i]))
+                            {
+                                logFileTextBox.AppendText(log[i] + "\n");
+                            }
                         }
+                        ScrollLogToEnd(logFileTextBox);
                     }
-                    ScrollLogToEnd(logFileTextBox);
                 }
             }
             catch (Exception ex)
@@ -788,6 +894,55 @@ namespace MurkysRustBoot
 
 
         #endregion
+
+        #region Chat
+
+        enum ChatMode
+        {
+            Console,
+            Private
+        };
+
+        Player chatSessionPlayer;
+
+        ChatMode chatMode = ChatMode.Console;
+
+        void SendChatMessage(Player player, string message)
+        {
+            if (player != null)
+            {
+                RCONSendCommand("RustBoot.Whisper " + player.UserID + " \"" + message + "\"", true);
+            }
+        }
+
+        private void CheckChatSession()
+        {
+            if (chatSessionPlayer != null)
+            {
+                var client = _players.FirstOrDefault(i => i.UserID == chatSessionPlayer.UserID);
+                if (client != null)
+                {
+                    chatMode = ChatMode.Private;
+                    ConsoleInputMode(ChatMode.Private);
+                    Console.WriteLine("Chat is now private with " + chatSessionPlayer.DisplayName);
+                }
+            }
+        }
+
+        void ConsoleInputMode(ChatMode chatMode)
+        {
+            if (chatMode == ChatMode.Console)
+            {
+                txt_Console.BorderBrush = GetColorBrush("Color_InfoBlue");
+            }
+            else if (chatMode == ChatMode.Private)
+            {
+                txt_Console.BorderBrush = GetColorBrush("Color_DangerRed");
+            }
+        }
+        
+        #endregion
+        
 
         #region Server
 
@@ -825,21 +980,40 @@ namespace MurkysRustBoot
         private void InitLaunch()
         {
             SwitchWindowLayout(ServerState.RUNNING);
-            CheckForNewtonsoftJSON();
+            CheckForDLLs();
             StartServerThread();
         }
 
-        private void CheckForNewtonsoftJSON()
+        private void CheckForDLLs()
         {
-            var destinationfolder = Path.Combine(Environment.CurrentDirectory, "Newtonsoft.Json.dll");
-            if (!File.Exists(destinationfolder))
+            var newtonsoft = Path.Combine(Environment.CurrentDirectory, "Newtonsoft.Json.dll");
+            var queryMaster = Path.Combine(Environment.CurrentDirectory, "QueryMaster.dll");
+            var ionicBZip2 = Path.Combine(Environment.CurrentDirectory, "Ionic.BZip2.dll");
+
+            if (!File.Exists(newtonsoft) || !File.Exists(queryMaster) || !File.Exists(ionicBZip2))
             {
-                CopyEmbeddedResource("DLLs.Newtonsoft.Json.dll", destinationfolder);
+                try
+                {
+                    CopyEmbeddedResource("DLLs.Newtonsoft.Json.dll", newtonsoft);
+                    CopyEmbeddedResource("DLLs.QueryMaster.dll", queryMaster);
+                    CopyEmbeddedResource("DLLs.Ionic.BZip2.dll", ionicBZip2);
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Ops!\n" + ex.Message);
+                }
             }
         }
 
         private void tabs_Server_Running_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (e.Source is TabControl)
+            {
+                chatMode = ChatMode.Console;
+                ConsoleInputMode(ChatMode.Console);
+                Console.WriteLine("Chat is now in console mode");
+            }
             var tab = (sender as TabControl).SelectedItem as TabItem;
             var logFolder = Path.Combine(Path.GetDirectoryName(Properties.Settings.Default.Rustserverexecutable), "server", Properties.Settings.Default.Identity);
             switch (tab.Name)
@@ -859,10 +1033,13 @@ namespace MurkysRustBoot
                 case "tab_EAC":
                     UpdateLog(FindLogBox("Log.EAC.txt"), "Log.EAC.txt", logFolder, true);
                     break;
-                default:
+                case "tab_Players":
+                    CheckChatSession();
                     break;
             }
         }
+
+
 
         private string GenerateServerArguments()
         {
@@ -899,34 +1076,76 @@ namespace MurkysRustBoot
             {
                 arguments += Settings.CustomArguments;
             }
-            Console.WriteLine(arguments);
             return arguments;
         }
 
         private void btn_RestartServer_Click(object sender, RoutedEventArgs e)
         {
+            RestartServer();
+        }
+
+        private void RestartServer(bool force = false)
+        {
+
+            if (force)
+            {
+                DoRestart();
+            }
+
             if (MessageBox.Show("Are you sure you want to restart the server?", "Restart server?", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
-                DisableConsole();
+                DoRestart();
+            }
+        }
+
+        private void DoRestart()
+        {
+            DisableConsole();
+            txt_Console.IsEnabled = false;
+            Console.WriteLine(RCONConnected);
+            if (RCONConnected && RCONCheckConnection())
+            {
+                Console.WriteLine("RCON detected while restarting.");
+                RCONSendCommand("quit", true);
                 SwitchWindowLayout(ServerState.STOPPED);
+                InitLaunch();
+            }
+            else
+            {
                 if (serverProcess != null && serverProcess.MainWindowHandle != IntPtr.Zero)
                 {
                     serverProcess.CloseMainWindow();
                     InitLaunch();
+                    SwitchWindowLayout(ServerState.STOPPED);
                 }
             }
         }
 
         private void btn_StopServer_Click(object sender, RoutedEventArgs e)
         {
+            StopServer();
+        }
+
+        private void StopServer()
+        {
             if (MessageBox.Show("Are you sure you want to stop the server?", "Stop server?", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
                 DeleteCorePlugin();
                 DisableConsole();
-                if (serverProcess != null && serverProcess.MainWindowHandle != IntPtr.Zero)
+                txt_Console.IsEnabled = false;
+                if (RCONConnected && RCONCheckConnection())
                 {
-                    serverProcess.CloseMainWindow();
+                    Console.WriteLine("RCON detected while stopping.");
+                    RCONSendCommand("quit", true);
                     SwitchWindowLayout(ServerState.STOPPED);
+                }
+                else
+                {
+                    if (serverProcess != null && serverProcess.MainWindowHandle != IntPtr.Zero)
+                    {
+                        serverProcess.CloseMainWindow();
+                        SwitchWindowLayout(ServerState.STOPPED);
+                    }
                 }
             }
         }
@@ -1007,7 +1226,165 @@ namespace MurkysRustBoot
         }
 
         #endregion
-        
+
+        #region RCON
+
+        Server RCONRustServer;
+        ServerInfo RCONRustServerInfo;
+        bool RCONConnected = false;
+
+        void RCONInitConnect()
+        {
+            var Settings = Properties.Settings.Default;
+            if (!Settings.RCONenabled)
+            {
+                txt_Console.IsEnabled = false;
+                MessageBox.Show("RCON is not enabled.\nTwo way communication services are disabled.");
+            }
+            else
+            {
+                var ip = "127.0.0.1";
+                var port = Settings.RCONport;
+                var pass = Settings.RCONpassword;
+                if (RCONConnect(ip, pass, port))
+                {
+                    txt_Console.IsEnabled = true;
+                }
+                else
+                {
+                    txt_Console.IsEnabled = false;
+                    MessageBox.Show("Error while trying to establish RCON connection");
+                }
+            }
+        }
+
+        bool RCONConnect(string ip, string pass, int port)
+        {
+            IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port);
+            RCONRustServer = ServerQuery.GetServerInstance(EngineType.Source, ep);
+            RCONRustServerInfo = RCONRustServer.GetInfo();
+            if (RCONRustServer.GetControl(pass))
+            {
+                RCONConnected = true;
+                return true;
+            }
+            RCONConnected = false;
+            return false;
+        }
+
+        bool RCONCheckConnection()
+        {
+            if (RCONRustServer != null && RCONRustServer.GetControl(Properties.Settings.Default.RCONpassword))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        void RCONDispose()
+        {
+            RCONRustServer.Dispose();
+            RCONRustServer = null;
+            RCONRustServerInfo = null;
+        }
+
+        private void txt_Console_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == System.Windows.Input.Key.Enter)
+            {
+                if (chatMode == ChatMode.Private)
+                {
+                    if (chatSessionPlayer != null)
+                    {
+                        SendChatMessage(chatSessionPlayer, txt_Console.Text);
+                        txt_Console.Text = "";
+                    }
+                }
+                else
+                {
+                    RCONSendCommand(txt_Console.Text);
+                    txt_Console.Text = "";
+                }
+            }
+        }
+
+        static string[] RCONCriticalCommands = {
+            "quit",
+            "server.stop",
+            "stop",
+            "server.restart",
+            "restart"
+        };
+
+        void RCONSendCommand(string input, bool force = false)
+        {
+            if (!string.IsNullOrEmpty(input))
+            {
+                if (force)
+                {
+                    new Thread(() =>
+                    {
+                        Thread.CurrentThread.IsBackground = true;
+                        RCONRustServer.Rcon.SendCommand(input);
+                    }).Start();
+                }
+                else
+                {
+                    var command = RCONCriticalCommands.FirstOrDefault(n => input.StartsWith(n));
+                    if (command != null)
+                    {
+                        if (command == "quit" || command == "server.stop" || command == "stop")
+                            StopServer();
+                        if (command == "server.restart")
+                            RestartServer();
+                        if (command.StartsWith("restart"))
+                            RestartServerDelayed(input);
+                    }
+                    else
+                    {
+                        new Thread(() =>
+                        {
+                            Thread.CurrentThread.IsBackground = true;
+                            RCONRustServer.Rcon.SendCommand(input);
+                        }).Start();
+                    }
+                }
+            }
+        }
+
+        private void RestartServerDelayed(string command)
+        {
+            Console.WriteLine(command);
+            var split = command.Split(null);
+            if (split.Length == 1)
+            {
+                RestartServer();
+            }
+            else
+            {
+                int _timeout;
+                int.TryParse(split[1], out _timeout);
+                if (_timeout > 0)
+                {
+                    new Thread(() =>
+                    {
+                        Thread.CurrentThread.IsBackground = true;
+                        RCONSendCommand("say Restart in " + _timeout.ToString() + " seconds.", true);
+                        Thread.Sleep(TimeSpan.FromSeconds(_timeout / 2));
+                        RCONSendCommand("say Restart in " + (_timeout / 2).ToString() + " seconds.", true);
+                        Thread.Sleep(TimeSpan.FromSeconds(_timeout / 2));
+                        RCONSendCommand("say Restarting...", true);
+                        Dispatcher.Invoke(new Action(() =>
+                        {
+                            RestartServer(true);
+                        }));
+                    }).Start();
+                }
+            }
+        }
+
+        #endregion
+
         #region Tabs
 
         private void tabs_Menu_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -1029,10 +1406,19 @@ namespace MurkysRustBoot
                 stack_Btns_Settings_Lower.Margin = new Thickness(0, 0, 0, 0);
             }
         }
-        
+
+
         #endregion
 
         #region Helpers
+
+        string Randomstring(int length)
+        {
+            return new string(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 8)
+                .Select(s => s[new Random()
+                .Next(s.Length)])
+                .ToArray());
+        }
 
         public static IEnumerable<string> ReadLines(string path)
         {
@@ -1079,7 +1465,15 @@ namespace MurkysRustBoot
             Process.Start("http://oxidemod.org/");
         }
 
+
+
+
+
+
+
         #endregion
+
+
     }
 
     public static class ExtensionMethods

@@ -8,6 +8,6 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("dlls/newtonsoft.json.dll")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("dlls/ionic.bzip2.dll")]
 
 

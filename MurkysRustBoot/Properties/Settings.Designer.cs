@@ -135,7 +135,7 @@ namespace MurkysRustBoot.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("supersecretpassword")]
         public string RCONpassword {
             get {
                 return ((string)(this["RCONpassword"]));
@@ -183,7 +183,7 @@ namespace MurkysRustBoot.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool RCONenabled {
             get {
                 return ((bool)(this["RCONenabled"]));

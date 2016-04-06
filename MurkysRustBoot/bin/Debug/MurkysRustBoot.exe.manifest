@@ -43,14 +43,26 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="MurkysRustBoot.exe" size="3167232">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Ionic.BZip2.dll" size="57344">
+      <assemblyIdentity name="Ionic.BZip2" version="1.9.1.8" publicKeyToken="EDBE51AD942A3F5C" language="neutral" processorArchitecture="msil" />
+      <hash>
+        <dsig:Transforms>
+          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+        </dsig:Transforms>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+        <dsig:DigestValue>YRMiY16Si+X0JipbHGRkxFKmiQBLBylXmoLr09lgtEA=</dsig:DigestValue>
+      </hash>
+    </dependentAssembly>
+  </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="MurkysRustBoot.exe" size="3396096">
       <assemblyIdentity name="MurkysRustBoot" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>KV2EsKB/GFPHq4uNPLv7l61HtLpk3ypoclYNy9LcUvo=</dsig:DigestValue>
+        <dsig:DigestValue>FecOVDnO7638wO4Lz4SNkmG0qFt2RhDONEjtIi6xFqU=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -66,6 +78,18 @@
       </hash>
     </dependentAssembly>
   </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="QueryMaster.dll" size="152576">
+      <assemblyIdentity name="QueryMaster" version="3.1.0.0" language="neutral" processorArchitecture="msil" />
+      <hash>
+        <dsig:Transforms>
+          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+        </dsig:Transforms>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+        <dsig:DigestValue>wTc8XvxQOG14DPdHPtO5JpunDzs/wKPjX6ueLU76dAg=</dsig:DigestValue>
+      </hash>
+    </dependentAssembly>
+  </dependency>
   <file name="Icon_MurkysRustBoot.ico" size="370070">
     <hash>
       <dsig:Transforms>
@@ -75,13 +99,13 @@
       <dsig:DigestValue>ALLERZsasZrHZAra6RimUON/KEXmYr8cpoeN91WAgv0=</dsig:DigestValue>
     </hash>
   </file>
-  <file name="MurkysRustBoot.exe.config" size="3312">
+  <file name="MurkysRustBoot.exe.config" size="3269">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>TzauKH3bleuN3TIp+yIUupjLwksrgEJ7FsQ9EA2RpwU=</dsig:DigestValue>
+      <dsig:DigestValue>rXUoT13MfbYTcer7rOCBpv8iN+ksF2q5dZJth6WuMsw=</dsig:DigestValue>
     </hash>
   </file>
 </asmv1:assembly>

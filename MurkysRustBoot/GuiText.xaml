@@ -3,15 +3,14 @@
                     xmlns:local="clr-namespace:MurkysRustBoot"
                     xmlns:my="clr-namespace:System;assembly=mscorlib">
     
-    <my:String x:Key="AppVersion">0.0.36</my:String>
+    <my:String x:Key="AppVersion">0.0.47</my:String>
     <my:String x:Key="AppName">Murky's RustBoot</my:String>
     
     <!--#region Main tabs-->
 
-    <my:String x:Key="General:">General</my:String>
-    <my:String x:Key="RCON:">RCON</my:String>
-    <my:String x:Key="Plugins:">Plugins</my:String>
-    <my:String x:Key="Advanced:">Advanced</my:String>
+    <my:String x:Key="General">General</my:String>
+    <my:String x:Key="Plugins">Plugins</my:String>
+    <my:String x:Key="Misc">Misc</my:String>
     
     <!--#endregion-->
     
@@ -24,9 +23,11 @@
     <my:String x:Key="Headerimage:">Header image:</my:String>
     <my:String x:Key="Homepage:">Homepage:</my:String>
     <my:String x:Key="World size:">World size:</my:String>
-    
+
     <my:String x:Key="Enabled:">Enabled:</my:String>
+    <my:String x:Key="RCONEnabled:">RCON Enabled:</my:String>
     <my:String x:Key="Port:">Port:</my:String>
+    <my:String x:Key="RCONPort:">RCON Port:</my:String>
     <my:String x:Key="Password:">Password:</my:String>
     
     <my:String x:Key="Tickrate:">Tickrate:</my:String>

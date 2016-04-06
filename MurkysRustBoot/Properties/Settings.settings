@@ -30,7 +30,7 @@
       <Value Profile="(Default)">28016</Value>
     </Setting>
     <Setting Name="RCONpassword" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">supersecretpassword</Value>
     </Setting>
     <Setting Name="Serverport" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">28015</Value>
@@ -42,7 +42,7 @@
       <Value Profile="(Default)">600</Value>
     </Setting>
     <Setting Name="RCONenabled" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
+      <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="Rustserverexecutable" Type="System.String" Scope="User">
       <Value Profile="(Default)" />

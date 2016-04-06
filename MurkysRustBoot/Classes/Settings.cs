@@ -18,9 +18,9 @@ namespace MurkysRustBoot.Classes
         public int Seed { get; set; } = 12345;
         public int Worldsize { get; set; } = 4000;
         public string Logfile { get; set; } = "";
-        public bool RCONenabled { get; set; } = false;
+        public bool RCONenabled { get; set; } = true;
         public int RCONport { get; set; } = 28016;
-        public string RCONpassword { get; set; } = "";
+        public string RCONpassword { get; set; } = "supersecretpassword";
 
         public int Serverport { get; set; } = 28015;
         public int Tickrate { get; set; } = 30;
