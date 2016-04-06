@@ -55,14 +55,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="MurkysRustBoot.exe" size="3396096">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="MurkysRustBoot.exe" size="2289664">
       <assemblyIdentity name="MurkysRustBoot" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>FecOVDnO7638wO4Lz4SNkmG0qFt2RhDONEjtIi6xFqU=</dsig:DigestValue>
+        <dsig:DigestValue>Xvm2nfDLNSAnHINpAk0uF33jBGa87Zq7vueUYMqUV3w=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

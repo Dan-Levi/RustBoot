@@ -43,6 +43,7 @@ namespace MurkysRustBoot
             Window_Settings.Visibility = Visibility.Visible;
             Window_Running.Visibility = Visibility.Collapsed;
             DeleteCorePlugin();
+            DisablePlayerActions();
             LoadSettings();
             CheckSettings();
         }
@@ -368,6 +369,33 @@ namespace MurkysRustBoot
             }
         }
 
+        private void EnablePlayerActions()
+        {
+            Console.WriteLine("Chat is now private with " + ChatSessionPlayer.DisplayName);
+            btn_Ban_Player.IsEnabled = true;
+            btn_Kick_Player.IsEnabled = true;
+            btn_Moderator_Player.IsEnabled = true;
+            btn_Unmoderator_Player.IsEnabled = true;
+
+            btn_Give_Player.IsEnabled = true;
+            btn_Give_Player.Visibility = Visibility.Visible;
+
+            btn_Kill_Player.IsEnabled = true;
+            btn_Kill_Player.Visibility = Visibility.Visible;
+        }
+
+        private void DisablePlayerActions()
+        {
+            btn_Ban_Player.IsEnabled = false;
+            btn_Kick_Player.IsEnabled = false;
+            btn_Moderator_Player.IsEnabled = false;
+            btn_Unmoderator_Player.IsEnabled = false;
+            btn_Give_Player.IsEnabled = false;
+            btn_Give_Player.Visibility = Visibility.Collapsed;
+            btn_Kill_Player.IsEnabled = false;
+            btn_Kill_Player.Visibility = Visibility.Collapsed;
+        }
+
         ObservableCollection<Player> _players;
         public ObservableCollection<Player> Players
         {
@@ -382,10 +410,7 @@ namespace MurkysRustBoot
 
         private void list_Players_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            btn_Icon_Ban.IsEnabled = false;
-            btn_Icon_Kick.IsEnabled = false;
-            btn_Icon_Moderator.IsEnabled = false;
-            btn_Icon_Un_Moderator.IsEnabled = false;
+            DisablePlayerActions();
             if (e.Source is ListBox)
             {
                 Player player = (sender as ListBox).SelectedItem as Player;
@@ -394,20 +419,15 @@ namespace MurkysRustBoot
                     txt_Players_Info_Username.Text = player.DisplayName;
                     txt_Players_Info_UserID.Text = player.UserID.ToString();
                     txt_Players_Info_IP_Adress.Text = player.IpAdress;
-                    btn_Icon_Ban.IsEnabled = true;
-                    btn_Icon_Kick.IsEnabled = true;
-                    btn_Icon_Moderator.IsEnabled = true;
-                    btn_Icon_Un_Moderator.IsEnabled = true;
-                    Console.WriteLine("Chat is now private with " + player.DisplayName);
                     chatMode = ChatMode.Private;
                     ConsoleInputMode(ChatMode.Private);
-                    chatSessionPlayer = player;
+                    ChatSessionPlayer = player;
+                    EnablePlayerActions();
                 }
             }
         }
-
-
-        private void btn_Icon_Kick_Click(object sender, RoutedEventArgs e)
+        
+        private void btn_Kick_Player_Click(object sender, RoutedEventArgs e)
         {
             Player player = list_Players.SelectedItem as Player;
             if (player != null)
@@ -417,12 +437,13 @@ namespace MurkysRustBoot
                     if (RCONConnected && RCONCheckConnection())
                     {
                         RCONSendCommand("kick " + player.UserID + " \"" + player.DisplayName + "\"", true);
+                        Players.Remove(player);
                     }
                 }
             }
         }
 
-        private void btn_Icon_Ban_Click(object sender, RoutedEventArgs e)
+        private void btn_Ban_Player_Click(object sender, RoutedEventArgs e)
         {
             Player player = list_Players.SelectedItem as Player;
             if (player != null)
@@ -432,12 +453,13 @@ namespace MurkysRustBoot
                     if (RCONConnected && RCONCheckConnection())
                     {
                         RCONSendCommand("ban " + player.UserID + " \"" + player.DisplayName + "\"", true);
+                        Players.Remove(player);
                     }
                 }
             }
         }
 
-        private void btn_Icon_Moderator_Click(object sender, RoutedEventArgs e)
+        private void btn_Moderator_Player_Click(object sender, RoutedEventArgs e)
         {
             Player player = list_Players.SelectedItem as Player;
             if (player != null)
@@ -448,12 +470,13 @@ namespace MurkysRustBoot
                     {
                         RCONSendCommand("moderatorid " + player.UserID + " \"" + player.DisplayName + "\"", true);
                         RCONSendCommand("kick " + player.UserID + " \"" + player.DisplayName + "\" " + "\"" + "moderation privileges granted.\"");
+                        Players.Remove(player);
                     }
                 }
             }
         }
 
-        private void btn_Icon_Un_Moderator_Click(object sender, RoutedEventArgs e)
+        private void btn_Unmoderator_Player_Click(object sender, RoutedEventArgs e)
         {
             Player player = list_Players.SelectedItem as Player;
             if (player != null)
@@ -464,7 +487,52 @@ namespace MurkysRustBoot
                     {
                         RCONSendCommand("removemoderator " + player.UserID, true);
                         RCONSendCommand("kick " + player.UserID + " \"" + player.DisplayName + "\" " + "\"" + "moderation privileges revoked by admin.\"");
+                        Players.Remove(player);
                     }
+                }
+            }
+        }
+
+        private void btn_Give_Player_Click(object sender, RoutedEventArgs e)
+        {
+            Player player = list_Players.SelectedItem as Player;
+            if (player != null)
+            {
+                ItemPicker ip = new ItemPicker();
+                ip.Owner = this;
+                if (ip.ShowDialog() == true)
+                {
+                    if (ip.RustItemsToGive != null)
+                    {
+                        new Thread(() =>
+                        {
+                            Thread.CurrentThread.IsBackground = true;
+                            foreach (RustItem rustItemToGive in ip.RustItemsToGive)
+                            {
+                                if (rustItemToGive.IsBP)
+                                {
+                                    RCONSendCommand("RustBoot.Give " + player.UserID + " " + 0 + " " + rustItemToGive.ID + " BP", true);
+                                }
+                                else
+                                {
+                                    RCONSendCommand("RustBoot.Give " + player.UserID + " " + rustItemToGive.Amount.ToString() + " " + rustItemToGive.ID, true);
+                                }
+                                Thread.Sleep(2000);
+                            }
+                        }).Start();
+                    }
+                }
+            }
+        }
+
+        private void btn_Kill_Player_Click(object sender, RoutedEventArgs e)
+        {
+            Player player = list_Players.SelectedItem as Player;
+            if (player != null)
+            {
+                if (MessageBox.Show("Really kill " + player.DisplayName + "?", "Kill player?",MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                {
+                    RCONSendCommand("RustBoot.Kill " + player.UserID.ToString(), true);
                 }
             }
         }
@@ -478,7 +546,7 @@ namespace MurkysRustBoot
         List<string> Plugins;
         List<string> DeactivatedPlugins;
         List<string> ValidPluginExtensions = new List<string> {
-            ".cs",".lua"
+            ".cs",".lua",".py"
         };
         bool ValidDrop = false;
         ListBox LastManipulatedListBox;
@@ -535,6 +603,7 @@ namespace MurkysRustBoot
                         AddPlayer(report.Message);
                         break;
                     case "PlayerDisconnected":
+                        Console.WriteLine("Player Disconnected");
                         RemovePlayer(report.Message);
                         break;
                     default:
@@ -799,16 +868,17 @@ namespace MurkysRustBoot
             }
         }
 
-        string[] KnownServerMessages = {
-            "Couldn't Start Server.",
-            "Connected to Steam"
-        };
+        void PrintToGeneralLog(string text)
+        {
+            log_General.AppendText(text + "\n");
+        }
 
         void CheckLastLineForCommand(string path)
         {
             var lastLine = ReadLines(path).Last();
             if (lastLine.Contains("Connected to Steam"))
             {
+                PrintToGeneralLog("Server is running.");
                 EnableConsole();
                 RCONInitConnect();
             }
@@ -817,7 +887,18 @@ namespace MurkysRustBoot
                 serverProcess.CloseMainWindow();
                 MessageBox.Show("Couldn't Start Server. Ensure that port " +
                     Properties.Settings.Default.Serverport +
-                    "is not in use by another instance of the server or another application.");
+                    " is not in use by instance or another application.");
+                SwitchWindowLayout(ServerState.STOPPED);
+                try
+                {
+                    Process p = new Process();
+                    p.StartInfo.FileName = "taskmgr";
+                    p.Start();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Ops!\nFailed to open Task manager\nError message:\n" + ex.Message);
+                }
             }
         }
 
@@ -847,7 +928,7 @@ namespace MurkysRustBoot
             }
             catch (Exception ex)
             {
-                MessageBox.Show("[UpdateLog] Ops! " + ex.Message + "\n\nPlease report back to author: post@dan-levi.no");
+                Console.WriteLine("[UpdateLog] Ops! " + ex.Message + "\n\nPlease report back to author: post@dan-levi.no");
             }
         }
 
@@ -874,7 +955,7 @@ namespace MurkysRustBoot
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Ops! Errormessage:\n" + ex.Message + "\n\nPlease report back to author: post@dan-levi.no");
+                Console.WriteLine("Ops! Errormessage:\n" + ex.Message + "\n\nPlease report back to author: post@dan-levi.no");
             }
         }
 
@@ -903,7 +984,7 @@ namespace MurkysRustBoot
             Private
         };
 
-        Player chatSessionPlayer;
+        Player ChatSessionPlayer;
 
         ChatMode chatMode = ChatMode.Console;
 
@@ -917,14 +998,15 @@ namespace MurkysRustBoot
 
         private void CheckChatSession()
         {
-            if (chatSessionPlayer != null)
+            if (ChatSessionPlayer != null)
             {
-                var client = _players.FirstOrDefault(i => i.UserID == chatSessionPlayer.UserID);
+                var client = _players.FirstOrDefault(i => i.UserID == ChatSessionPlayer.UserID);
                 if (client != null)
                 {
+                    EnablePlayerActions();
                     chatMode = ChatMode.Private;
                     ConsoleInputMode(ChatMode.Private);
-                    Console.WriteLine("Chat is now private with " + chatSessionPlayer.DisplayName);
+                    Console.WriteLine("Chat is now private with " + ChatSessionPlayer.DisplayName);
                 }
             }
         }
@@ -942,8 +1024,7 @@ namespace MurkysRustBoot
         }
         
         #endregion
-        
-
+       
         #region Server
 
         bool IsRunning = false;
@@ -989,6 +1070,7 @@ namespace MurkysRustBoot
             var newtonsoft = Path.Combine(Environment.CurrentDirectory, "Newtonsoft.Json.dll");
             var queryMaster = Path.Combine(Environment.CurrentDirectory, "QueryMaster.dll");
             var ionicBZip2 = Path.Combine(Environment.CurrentDirectory, "Ionic.BZip2.dll");
+            PrintToGeneralLog("Extracting dependencies");
 
             if (!File.Exists(newtonsoft) || !File.Exists(queryMaster) || !File.Exists(ionicBZip2))
             {
@@ -1001,7 +1083,7 @@ namespace MurkysRustBoot
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Ops!\n" + ex.Message);
+                    Console.WriteLine("Ops!\n" + ex.Message);
                 }
             }
         }
@@ -1015,6 +1097,7 @@ namespace MurkysRustBoot
                 Console.WriteLine("Chat is now in console mode");
             }
             var tab = (sender as TabControl).SelectedItem as TabItem;
+            if (tab.Name != "tab_Players") DisablePlayerActions();
             var logFolder = Path.Combine(Path.GetDirectoryName(Properties.Settings.Default.Rustserverexecutable), "server", Properties.Settings.Default.Identity);
             switch (tab.Name)
             {
@@ -1038,9 +1121,7 @@ namespace MurkysRustBoot
                     break;
             }
         }
-
-
-
+        
         private string GenerateServerArguments()
         {
             var Settings = Properties.Settings.Default;
@@ -1087,7 +1168,7 @@ namespace MurkysRustBoot
         private void RestartServer(bool force = false)
         {
 
-            if (force)
+            if (force != false)
             {
                 DoRestart();
             }
@@ -1187,12 +1268,13 @@ namespace MurkysRustBoot
                 CheckForCorePlugin();
                 InitiateLogWatchers();
                 InitiatePlayerList();
+                PrintToGeneralLog("Initiating server thread.");
                 StartProcessWorker();
                 Properties.Settings.Default.Save();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Ops! Errormessage:\n" + ex.Message + "\n\nPlease report back to author: post@dan-levi.no");
+                Console.WriteLine("Ops! Errormessage:\n" + ex.Message + "\n\nPlease report back to author: post@dan-levi.no");
 
             }
         }
@@ -1294,9 +1376,9 @@ namespace MurkysRustBoot
             {
                 if (chatMode == ChatMode.Private)
                 {
-                    if (chatSessionPlayer != null)
+                    if (ChatSessionPlayer != null)
                     {
-                        SendChatMessage(chatSessionPlayer, txt_Console.Text);
+                        SendChatMessage(ChatSessionPlayer, txt_Console.Text);
                         txt_Console.Text = "";
                     }
                 }
@@ -1446,9 +1528,9 @@ namespace MurkysRustBoot
             }
         }
 
-        SolidColorBrush GetColorBrush(string name)
+        public static SolidColorBrush GetColorBrush(string name)
         {
-            return Resources[name] as SolidColorBrush;
+            return Application.Current.Resources[name] as SolidColorBrush;
         }
 
         #endregion
@@ -1464,6 +1546,8 @@ namespace MurkysRustBoot
         {
             Process.Start("http://oxidemod.org/");
         }
+
+
 
 
 

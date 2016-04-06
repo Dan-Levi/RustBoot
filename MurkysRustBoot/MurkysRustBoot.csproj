@@ -105,6 +105,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="ItemPicker.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -115,7 +119,11 @@
     </Compile>
     <Compile Include="Classes\Player.cs" />
     <Compile Include="Classes\RustBootReport.cs" />
+    <Compile Include="Classes\RustItems.cs" />
     <Compile Include="Classes\Settings.cs" />
+    <Compile Include="ItemPicker.xaml.cs">
+      <DependentUpon>ItemPicker.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -164,14 +172,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\btn_Quit.png" />
     <Resource Include="Images\logo_Rust.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\bg_Rust.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\header_MurkysRustBoot.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Icon_MurkysRustBoot.ico" />
@@ -218,6 +222,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="DLLs\Ionic.BZip2.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\icon_Give.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\icon_Kill.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

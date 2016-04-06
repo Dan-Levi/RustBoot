@@ -1,0 +1,76 @@
+﻿<Window x:Name="window_ItemPicker" x:Class="MurkysRustBoot.ItemPicker"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MurkysRustBoot"
+        mc:Ignorable="d"
+        Title="ItemPicker" Height="550" Width="550" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" AllowsTransparency="True" WindowStyle="None" MouseDown="window_ItemPicker_MouseDown">
+    <Grid>
+        <Grid.Background>
+            <ImageBrush ImageSource="Images/bg_Rust.png"/>
+        </Grid.Background>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="140"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" Background="{StaticResource BorderDarkGreen}">
+            <TextBlock VerticalAlignment="Center" Margin="5" Foreground="#fbebe0" FontWeight="Bold" FontSize="14" Text="Items"/>
+        </StackPanel>
+        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right"  Height="20">
+            <Button x:Name="btn_Close" FontSize="14" FontWeight="Bold" Style="{StaticResource Btn_Template}" Background="{StaticResource DangerRed}" Height="20" Width="20" Click="btn_Close_Click">
+                X
+            </Button>
+        </StackPanel>
+        <DockPanel Grid.Row="1" Grid.Column="1">
+            <DockPanel DockPanel.Dock="Bottom" Height="30" Margin="0,0,0,8">
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                    <TextBox x:Name="txt_Amount" DockPanel.Dock="Left"  Width="40" Margin="8,0" Text="0" TextAlignment="Center" FontSize="16" Padding="0,4,0,0" Background="{StaticResource BorderDarkGreen}" Foreground="White" KeyUp="txt_Amount_KeyUp" PreviewTextInput="txt_Amount_PreviewTextInput"/>
+
+                    <Button x:Name="btn_Give" Style="{StaticResource Btn_Template}" Background="{StaticResource SuccessGreen}" Foreground="{StaticResource SuccessGreen_Highlighted}" Content="Give" Height="30" Width="60" Click="btn_Give_Click"/>
+                    
+                    <Button x:Name="btn_Cancel" Style="{StaticResource Btn_Template}" Background="{StaticResource DangerRed}" Foreground="{StaticResource DangerRed_Highlighted}" Content="Close" Height="30" Width="60" Click="btn_Cancel_Click"/>
+                </StackPanel>
+                <Slider x:Name="slider_Amount" DockPanel.Dock="Left" Margin="8,0,0,0" VerticalAlignment="Center" Maximum="1000" SmallChange="1" LargeChange="20" Cursor="Hand" IsSnapToTickEnabled="True" ValueChanged="slider_Amount_ValueChanged"/>
+            </DockPanel>
+            <TabControl x:Name="CategoryTabControl" Background="Transparent" BorderBrush="{x:Null}" BorderThickness="0">
+                <TabControl.Resources>
+                    <Style TargetType="TabPanel">
+                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                    </Style>
+                    <Style TargetType="TabItem">
+                        <Setter Property="Template" Value="{DynamicResource tabs_Item}"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Foreground" Value="{StaticResource InfoBlue_Highlighted}"></Setter>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Foreground" Value="{StaticResource InfoBlue_Highlighted}"></Setter>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="False">
+                                <Setter Property="Foreground" Value="{StaticResource InfoBlue_Highlighted}"></Setter>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </TabControl.Resources>
+            </TabControl>
+        </DockPanel>
+        <DockPanel Grid.Row="1" Grid.Column="0">
+            <Grid DockPanel.Dock="Bottom" Margin="8" Height="30">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width=".53*"/>
+                    <ColumnDefinition Width=".36*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Button x:Name="btn_Add_Item" Margin="0,0,4,0" Height="30" FontSize="12" Grid.Column="0" Style="{StaticResource Btn_Template}" Background="{StaticResource SuccessGreen}" Foreground="{StaticResource SuccessGreen_Highlighted}" Content="Add" Click="btn_Add_Item_Click"/>
+                <Button x:Name="btn_Add_BP" Style="{StaticResource Btn_Template}" FontSize="12" Grid.Column="1" Margin="0" Background="{StaticResource InfoBlue}" Foreground="{StaticResource InfoBlue_Highlighted}" Content="BP" Height="30" Click="btn_Add_BP_Click"/>
+                <Button x:Name="btn_Remove_Item" Margin="4,0,0,0" Height="30" FontSize="12" Grid.Column="2" Style="{StaticResource Btn_Template}" Background="{StaticResource DangerRed}" Foreground="{StaticResource DangerRed_Highlighted}" Content="Remove" Click="btn_Remove_Item_Click"/>
+            </Grid>
+            <ListBox x:Name="list_Picked_Items" DockPanel.Dock="Top" HorizontalContentAlignment="Stretch"  Background="{StaticResource BorderDarkGreen}" Foreground="White" SelectionMode="Extended" ItemTemplate="{StaticResource TemplatePickedRustItemsList}" SelectionChanged="list_Picked_Items_SelectionChanged" BorderBrush="{x:Null}" BorderThickness="0" />
+        </DockPanel>
+    </Grid>
+</Window>

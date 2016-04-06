@@ -1,6 +1,10 @@
 ﻿using MurkysRustBoot;
 using Newtonsoft.Json;
+using Rust;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using UnityEngine;
 
 namespace Oxide.Plugins
 {
@@ -15,36 +19,118 @@ namespace Oxide.Plugins
         void Init()
         {
             Players = new Dictionary<ulong, BasePlayer>();
+            foreach (var player in BasePlayer.activePlayerList)
+            {
+                Players.Add(player.userID, player);
+            }
             RustBootConsoleMsg("RustBootPluginInit");
         }
 
         void OnPlayerInit(BasePlayer player)
         {
-            Players.Add(player.userID, player);
-            RustBootConsoleMsg("PlayerConnected", JsonConvert.SerializeObject(new Player { DisplayName = player.displayName, UserID = player.userID, IpAdress = player.net.connection.ipaddress }));
+            if (!Players.ContainsKey(player.userID))
+            {
+                Players.Add(player.userID, player);
+                RustBootConsoleMsg("PlayerConnected", JsonConvert.SerializeObject(new Player { DisplayName = player.displayName, UserID = player.userID, IpAdress = player.net.connection.ipaddress }));
+            }
         }
 
         void OnPlayerDisconnected(BasePlayer player, string reason)
         {
-            Players.Remove(player.userID);
-            RustBootConsoleMsg("PlayerDisconnected", JsonConvert.SerializeObject(new Player { DisplayName = player.displayName, UserID = player.userID, IpAdress = player.net.connection.ipaddress }));
+            if (Players.ContainsKey(player.userID))
+            {
+                Players.Remove(player.userID);
+                RustBootConsoleMsg("PlayerDisconnected", JsonConvert.SerializeObject(new Player { DisplayName = player.displayName, UserID = player.userID, IpAdress = player.net.connection.ipaddress }));
+            }
         }
 
         [ConsoleCommand("RustBoot.Whisper")]
         void RustBootAdminWhisper(ConsoleSystem.Arg arg)
         {
-            var args = arg.HasArgs() ? arg.Args : null;
-            if (args != null && args.Length == 2)
+            if (arg.connection == null)
             {
-                ulong _userId;
-                ulong.TryParse(args[0], out _userId);
-                var message = args[1];
-                if (Players.ContainsKey(_userId))
+                var args = arg.HasArgs() ? arg.Args : null;
+                if (args != null && args.Length == 2)
                 {
-                    PrintToChat(Players[_userId], message);
+                    ulong _userId;
+                    ulong.TryParse(args[0], out _userId);
+                    var message = args[1];
+                    if (Players.ContainsKey(_userId))
+                    {
+                        PrintToChat(Players[_userId], message);
+                    }
                 }
             }
         }
+
+        [ConsoleCommand("RustBoot.Kill")]
+        void RustBootAdminKill(ConsoleSystem.Arg arg)
+        {
+            if (arg.connection == null)
+            {
+                var args = arg.HasArgs() ? arg.Args : null;
+                if (args != null && args.Length == 1)
+                {
+                    ulong _userId;
+                    ulong.TryParse(args[0], out _userId);
+                    if (Players.ContainsKey(_userId))
+                    {
+                        var player = Players.FirstOrDefault(x => x.Value.userID == _userId);
+                        if (player.Value != null)
+                        {
+                            player.Value.Die();
+                        }
+                    }
+                }
+            }
+        }
+
+        [ConsoleCommand("RustBoot.Give")]
+        void RustBootAdminGive(ConsoleSystem.Arg arg)
+        {
+            if (arg.connection == null)
+            {
+                var args = arg.HasArgs() ? arg.Args : null;
+                if (args != null)
+                {
+                    int _item;
+                    ulong _userId;
+                    int _amount;
+                    int.TryParse(args[2], out _item);
+                    if (ItemManager.itemDictionary.ContainsKey(_item))
+                    {
+                        ItemDefinition info = ItemManager.itemDictionary[_item];
+                        ulong.TryParse(args[0], out _userId);
+                        if (Players.ContainsKey(_userId))
+                        {
+                            var player = Players[_userId];
+                            if (args.Length == 4 && args[3] == "BP")
+                            {
+                                if (!player.blueprints.AlreadyKnows(info))
+                                {
+                                    player.blueprints.Learn(info);
+                                    player.ChatMessage("You have learned how to make " + info.displayName.english);
+                                    return;
+                                }
+
+                            }
+                            int.TryParse(args[1], out _amount);
+                            if (_amount > 0)
+                            {
+                                player.GiveItem(ItemManager.CreateByItemID(info.itemid, _amount));
+                                player.ChatMessage("You recieved " + _amount + " " + info.displayName.english + " from admin.");
+                                RustBootConsoleMsg("ConsoleCommandSuccess", _amount + " " + info.displayName.english + " given to " + player.displayName);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        RustBootConsoleMsg("ConsoleCommandError", "Item|" + _item.ToString());
+                    }
+                }
+            }
+        }
+
 
         void RustBootConsoleMsg(string command, string message = "")
         {
@@ -86,6 +172,7 @@ namespace MurkysRustBoot
             set { userID = value; }
         }
     }
+
     public class RustBootReport
     {
         string command;

@@ -20,5 +20,17 @@
                 </ToolTip>
             </TextBlock.ToolTip>
         </TextBlock>
-    </DataTemplate>    
+    </DataTemplate>
+
+    <DataTemplate x:Key="TemplatePickedRustItem">
+        <TextBlock Text="{Binding DisplayName}"></TextBlock>
+    </DataTemplate>
+    
+    
+    <DataTemplate x:Key="TemplatePickedRustItemsList">
+        <DockPanel>
+            <TextBlock DockPanel.Dock="Right" Text="{Binding Amount}"></TextBlock>
+            <TextBlock DockPanel.Dock="Left" Text="{Binding DisplayName}"></TextBlock>
+        </DockPanel>
+    </DataTemplate>
 </ResourceDictionary>

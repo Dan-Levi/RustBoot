@@ -3,7 +3,7 @@
                     xmlns:local="clr-namespace:MurkysRustBoot"
                     xmlns:my="clr-namespace:System;assembly=mscorlib">
     
-    <my:String x:Key="AppVersion">0.0.47</my:String>
+    <my:String x:Key="AppVersion">0.0.6</my:String>
     <my:String x:Key="AppName">Murky's RustBoot</my:String>
     
     <!--#region Main tabs-->

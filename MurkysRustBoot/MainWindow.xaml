@@ -22,9 +22,12 @@
             <ColumnDefinition MinWidth="200"></ColumnDefinition>
             <ColumnDefinition Width="150"></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <StackPanel IsEnabled="False" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Left">
-            <Button Style="{StaticResource Btn_Template}" Width="25" Height="25" Margin="8,0,0,8">
-                <Image></Image>
+        <StackPanel Grid.Row="2" Grid.Column="2" HorizontalAlignment="Left" Margin="8,70,0,0">
+            <Button x:Name="btn_Give_Player"  Style="{StaticResource Btn_Template}" Margin="0,0,0,8" Width="30" Height="30" ToolTip="Give player ..." Click="btn_Give_Player_Click" >
+                <Image Source="Images/icon_Give.png"></Image>
+            </Button>
+            <Button x:Name="btn_Kill_Player"  Style="{StaticResource Btn_Template}" Margin="0,0,0,8" Width="30" Height="30" ToolTip="Kill player" Click="btn_Kill_Player_Click" >
+                <Image Source="Images/icon_Kill.png"></Image>
             </Button>
         </StackPanel>
         <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="16,0,0,0">
@@ -313,16 +316,16 @@
                                     <TextBlock x:Name="txt_Playercount">0</TextBlock>
                                 </StackPanel>
                                 <DockPanel Margin="0,0,0,8" DockPanel.Dock="Bottom" Height="20" LastChildFill="False">
-                                    <Button x:Name="btn_Icon_Ban" ToolTip=" Ban player" DockPanel.Dock="Right" IsEnabled="False" Margin="0,0,6,0" Background="{StaticResource DangerRed}" Style="{StaticResource Btn_Template}" Height="20" Click="btn_Icon_Ban_Click">
+                                    <Button x:Name="btn_Ban_Player" ToolTip=" Ban player" DockPanel.Dock="Right" IsEnabled="False" Margin="0,0,6,0" Background="{StaticResource DangerRed}" Style="{StaticResource Btn_Template}" Height="20" Click="btn_Ban_Player_Click">
                                         <Image Source="Images/icon_Ban.png"/>
                                     </Button>
-                                    <Button x:Name="btn_Icon_Kick" ToolTip="Kick player" DockPanel.Dock="Right" IsEnabled="False" Background="{StaticResource DangerOrange}" Style="{StaticResource Btn_Template}" Height="20" Click="btn_Icon_Kick_Click">
+                                    <Button x:Name="btn_Kick_Player" ToolTip="Kick player" DockPanel.Dock="Right" IsEnabled="False" Background="{StaticResource DangerOrange}" Style="{StaticResource Btn_Template}" Height="20" Click="btn_Kick_Player_Click">
                                         <Image Source="Images/icon_Kick.png"/>
                                     </Button>
-                                    <Button x:Name="btn_Icon_Moderator" ToolTip="Make moderator" DockPanel.Dock="Left" IsEnabled="False" Background="{StaticResource SuccessGreen}" Style="{StaticResource Btn_Template}" Height="20" Click="btn_Icon_Moderator_Click">
+                                    <Button x:Name="btn_Moderator_Player" ToolTip="Make moderator" DockPanel.Dock="Left" IsEnabled="False" Background="{StaticResource SuccessGreen}" Style="{StaticResource Btn_Template}" Height="20" Click="btn_Moderator_Player_Click">
                                         <Image Source="Images/icon_Moderator.png"/>
                                     </Button>
-                                    <Button x:Name="btn_Icon_Un_Moderator" ToolTip="Remove moderation privileges" DockPanel.Dock="Left" IsEnabled="False" Background="{StaticResource DangerRed}" Style="{StaticResource Btn_Template}" Height="20" Click="btn_Icon_Un_Moderator_Click">
+                                    <Button x:Name="btn_Unmoderator_Player" ToolTip="Remove moderation privileges" DockPanel.Dock="Left" IsEnabled="False" Background="{StaticResource DangerRed}" Style="{StaticResource Btn_Template}" Height="20" Click="btn_Unmoderator_Player_Click">
                                         <Image Source="Images/icon_Moderator.png"/>
                                     </Button>
                                 </DockPanel>
@@ -342,11 +345,11 @@
                                         <RowDefinition/>
                                     </Grid.RowDefinitions>
                                     <TextBlock Text="Username" Grid.Row="0" Grid.Column="0" Style="{StaticResource PlayerInfoField}"/>
-                                    <TextBlock x:Name="txt_Players_Info_Username" Text="" Grid.Row="1" Grid.Column="0" Style="{StaticResource PlayerInfoField}"/>
-                                    <TextBlock Text="User ID" Grid.Row="0" Grid.Column="1" Style="{StaticResource PlayerInfoField}"/>
-                                    <TextBlock x:Name="txt_Players_Info_UserID" Text="" Grid.Row="1" Grid.Column="1" Style="{StaticResource PlayerInfoField}"/>
+                                    <TextBlock Text="User ID" Grid.Row="0" Grid.Column="1" Style="{StaticResource PlayerInfoField}" Margin="41,-1,41,1"/>
                                     <TextBlock Text="IP adress" Grid.Row="0" Grid.Column="2" Style="{StaticResource PlayerInfoField}"/>
-                                    <TextBlock x:Name="txt_Players_Info_IP_Adress" Text="" Grid.Row="1" Grid.Column="3" Style="{StaticResource PlayerInfoField}"/>
+                                    <TextBox x:Name="txt_Players_Info_Username" IsReadOnly="True" Style="{StaticResource SelectableInfoText}" Grid.Row="1" Grid.Column="0"/>
+                                    <TextBox Name="txt_Players_Info_UserID" IsReadOnly="True" Style="{StaticResource SelectableInfoText}" Grid.Row="1" Grid.Column="1"/>
+                                    <TextBox x:Name="txt_Players_Info_IP_Adress" IsReadOnly="True" Style="{StaticResource SelectableInfoText}" Grid.Row="1" Grid.Column="3"/>
                                 </Grid>
                             </Border>
                         </DockPanel>
