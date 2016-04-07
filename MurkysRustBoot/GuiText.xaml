@@ -10,6 +10,7 @@
 
     <my:String x:Key="General">General</my:String>
     <my:String x:Key="Plugins">Plugins</my:String>
+    <my:String x:Key="Events">Events</my:String>
     <my:String x:Key="Misc">Misc</my:String>
     
     <!--#endregion-->

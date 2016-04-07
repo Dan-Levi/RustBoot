@@ -1,10 +1,7 @@
 ﻿using MurkysRustBoot;
 using Newtonsoft.Json;
-using Rust;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using UnityEngine;
 
 namespace Oxide.Plugins
 {
@@ -26,6 +23,10 @@ namespace Oxide.Plugins
             RustBootConsoleMsg("RustBootPluginInit");
         }
 
+        /// <summary>
+        /// Add player to Players dictionary
+        /// </summary>
+        /// <param name="player">BasePlayer</param>
         void OnPlayerInit(BasePlayer player)
         {
             if (!Players.ContainsKey(player.userID))
@@ -35,6 +36,10 @@ namespace Oxide.Plugins
             }
         }
 
+        /// <summary>
+        /// Remove player from Players dictionary
+        /// </summary>
+        /// <param name="player">BasePlayer</param>
         void OnPlayerDisconnected(BasePlayer player, string reason)
         {
             if (Players.ContainsKey(player.userID))
@@ -63,12 +68,16 @@ namespace Oxide.Plugins
             }
         }
 
+        /// <summary>
+        /// Kill player based on Steam ID
+        /// </summary>
+        /// <param name="steamID">userID (Steam ID)</param>
         [ConsoleCommand("RustBoot.Kill")]
-        void RustBootAdminKill(ConsoleSystem.Arg arg)
+        void RustBootAdminKill(ConsoleSystem.Arg steamID)
         {
-            if (arg.connection == null)
+            if (steamID.connection == null)
             {
-                var args = arg.HasArgs() ? arg.Args : null;
+                var args = steamID.HasArgs() ? steamID.Args : null;
                 if (args != null && args.Length == 1)
                 {
                     ulong _userId;

@@ -8,6 +8,6 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/icon_kill.png")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/icon_moderator_remove.png")]
 
 

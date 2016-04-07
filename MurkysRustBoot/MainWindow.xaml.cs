@@ -41,11 +41,14 @@ namespace MurkysRustBoot
         {
             DataContext = this;
             Window_Settings.Visibility = Visibility.Visible;
+            stack_Side_Panel_Stopped.Visibility = Visibility.Visible;
+            stack_Side_Panel_Running.Visibility = Visibility.Collapsed;
             Window_Running.Visibility = Visibility.Collapsed;
             DeleteCorePlugin();
             DisablePlayerActions();
             LoadSettings();
             CheckSettings();
+            InitUserEvents();
         }
 
         private void btn_Rustserverexecutable_Click(object sender, RoutedEventArgs e)
@@ -260,6 +263,7 @@ namespace MurkysRustBoot
                 btn_SaveSettings.IsEnabled = true;
                 if (!string.IsNullOrEmpty(Settings.Hostname) && Settings.Maxplayers > 0 && Settings.Worldsize > 0 && Settings.Seed.ToString().Length == 5)
                 {
+                    CheckServerData(Settings);
                     if (Settings.RCONenabled)
                     {
                         if (Settings.RCONport == 0 || string.IsNullOrEmpty(Settings.RCONpassword))
@@ -293,6 +297,49 @@ namespace MurkysRustBoot
             }
         }
 
+        private void CheckServerData(Properties.Settings Settings)
+        {
+            var serverFolder = Path.GetDirectoryName(Settings.Rustserverexecutable);
+            if (!string.IsNullOrEmpty(Settings.Identity))
+            {
+                var identityFolder = Path.Combine(serverFolder, "server", Settings.Identity);
+                if (Directory.Exists(identityFolder))
+                {
+                    if (File.Exists(Path.Combine(identityFolder, "Storage.db")) || File.Exists(Path.Combine(identityFolder, "UserPersistence.db")))
+                    {
+                        btn_BP_Wipe.IsEnabled = true;
+                    }
+                    else
+                    {
+                        btn_BP_Wipe.IsEnabled = false;
+                    }
+                    if (File.Exists(Path.Combine(identityFolder, "Log.EAC.txt")) || File.Exists(Path.Combine(identityFolder, "Log.Log.txt")) || File.Exists(Path.Combine(identityFolder, "Log.Warning.txt")))
+                    {
+                        btn_Logs_Delete.IsEnabled = true;
+                    }
+                    else
+                    {
+                        btn_Logs_Delete.IsEnabled = false;
+                    }
+                    if (Directory.Exists(Path.Combine(identityFolder, "save")))
+                    {
+                        if (Directory.EnumerateFileSystemEntries(Path.Combine(identityFolder, "save")).Any())
+                        {
+                            btn_Map_Wipe.IsEnabled = true;
+                        }
+                        else
+                        {
+                            btn_Map_Wipe.IsEnabled = false;
+                        }
+                    }
+                    else
+                    {
+                        btn_Map_Wipe.IsEnabled = false;
+                    }
+                }
+            }
+        }
+
 
 
 
@@ -317,6 +364,10 @@ namespace MurkysRustBoot
                     lbl_Serverexecutable.Visibility = Visibility.Collapsed;
                     txt_Rustserverexecutable.Visibility = Visibility.Collapsed;
                     Window_Running.Visibility = Visibility.Visible;
+                    stack_Side_Panel_Running.IsEnabled = true;
+                    stack_Side_Panel_Running.Visibility = Visibility.Visible;
+                    stack_Side_Panel_Stopped.IsEnabled = false;
+                    stack_Side_Panel_Stopped.Visibility = Visibility.Collapsed;
                     break;
                 case ServerState.STOPPED:
                     Window_Settings.Visibility = Visibility.Visible;
@@ -326,9 +377,108 @@ namespace MurkysRustBoot
                     lbl_Serverexecutable.Visibility = Visibility.Visible;
                     txt_Rustserverexecutable.Visibility = Visibility.Visible;
                     Window_Running.Visibility = Visibility.Collapsed;
+                    stack_Side_Panel_Running.IsEnabled = false;
+                    stack_Side_Panel_Running.Visibility = Visibility.Collapsed;
+                    stack_Side_Panel_Stopped.IsEnabled = true;
+                    stack_Side_Panel_Stopped.Visibility = Visibility.Visible;
                     break;
                 default:
                     break;
+            }
+        }
+
+        private void btn_Map_Wipe_Click(object sender, RoutedEventArgs e)
+        {
+            var Settings = Properties.Settings.Default;
+            if (MessageBox.Show("Are you sure you want to wipe Map?", "Wipe map?", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            {
+                var serverFolder = Path.GetDirectoryName(Settings.Rustserverexecutable);
+                var mapFolder = Path.Combine(serverFolder, "server", Settings.Identity, "save");
+                if (Directory.Exists(mapFolder))
+                {
+                    try
+                    {
+                        var mapFolderInfo = new DirectoryInfo(mapFolder);
+                        foreach (var file in mapFolderInfo.GetFiles())
+                        {
+                            file.Delete();
+                        }
+                        foreach (var folder in mapFolderInfo.GetDirectories())
+                        {
+                            folder.Delete(true);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("[btn_Map_Wipe_Click] Ops!\n" + ex.Message);
+                        MessageBox.Show("Could not wipe map.\n Some files in " + mapFolder + " may be open in another application", "Could not delete map data");
+                    }
+                    finally
+                    {
+                        btn_Map_Wipe.IsEnabled = false;
+                        MessageBox.Show("Map wiped.");
+                    }
+                }
+            }
+        }
+
+        private void btn_BP_Wipe_Click(object sender, RoutedEventArgs e)
+        {
+            var Settings = Properties.Settings.Default;
+            if (MessageBox.Show("Are you sure you want to wipe blueprints?", "Wipe blueprints?", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            {
+                var identityFolder = Path.Combine(Path.GetDirectoryName(Settings.Rustserverexecutable), "server", Settings.Identity);
+                try
+                {
+                    var identityFolderInfo = new DirectoryInfo(identityFolder);
+                    foreach (var file in identityFolderInfo.GetFiles())
+                    {
+                        if (file.Name.Contains("Storage.db") || file.Name.Contains("UserPersistence.db"))
+                        {
+                            file.Delete();
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("[btn_BP_Wipe_Click] Ops!\n" + ex.Message);
+                }
+                finally
+                {
+                    btn_BP_Wipe.IsEnabled = false;
+                    MessageBox.Show("Blueprints wiped.");
+                }
+            }
+        }
+
+        private void btn_Logs_Delete_Click(object sender, RoutedEventArgs e)
+        {
+            var Settings = Properties.Settings.Default;
+            if (MessageBox.Show("Are you sure you want to delete the logs?", "Delete logs?", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            {
+                var identityFolder = Path.Combine(Path.GetDirectoryName(Settings.Rustserverexecutable), "server", Settings.Identity);
+                try
+                {
+                    var identityFolderInfo = new DirectoryInfo(identityFolder);
+                    foreach (var file in identityFolderInfo.GetFiles())
+                    {
+                        if (file.Name.Contains("Log.") && file.Name.EndsWith(".txt"))
+                        {
+                            file.Delete();
+                        }
+                        txt_Console.Clear();
+                        PrintToGeneralLog("Logs cleared.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("[btn_Logs_Delete_Click] Ops!\n" + ex.Message);
+                }
+                finally
+                {
+                    btn_Logs_Delete.IsEnabled = false;
+                    MessageBox.Show("Logs deleted.");
+                }
             }
         }
 
@@ -372,10 +522,18 @@ namespace MurkysRustBoot
         private void EnablePlayerActions()
         {
             Console.WriteLine("Chat is now private with " + ChatSessionPlayer.DisplayName);
+
             btn_Ban_Player.IsEnabled = true;
+            btn_Ban_Player.Visibility = Visibility.Visible;
+
             btn_Kick_Player.IsEnabled = true;
+            btn_Kick_Player.Visibility = Visibility.Visible;
+
             btn_Moderator_Player.IsEnabled = true;
+            btn_Moderator_Player.Visibility = Visibility.Visible;
+
             btn_Unmoderator_Player.IsEnabled = true;
+            btn_Unmoderator_Player.Visibility = Visibility.Visible;
 
             btn_Give_Player.IsEnabled = true;
             btn_Give_Player.Visibility = Visibility.Visible;
@@ -387,11 +545,20 @@ namespace MurkysRustBoot
         private void DisablePlayerActions()
         {
             btn_Ban_Player.IsEnabled = false;
+            btn_Ban_Player.Visibility = Visibility.Collapsed;
+
             btn_Kick_Player.IsEnabled = false;
+            btn_Kick_Player.Visibility = Visibility.Collapsed;
+
             btn_Moderator_Player.IsEnabled = false;
+            btn_Moderator_Player.Visibility = Visibility.Collapsed;
+
             btn_Unmoderator_Player.IsEnabled = false;
+            btn_Unmoderator_Player.Visibility = Visibility.Collapsed;
+
             btn_Give_Player.IsEnabled = false;
             btn_Give_Player.Visibility = Visibility.Collapsed;
+
             btn_Kill_Player.IsEnabled = false;
             btn_Kill_Player.Visibility = Visibility.Collapsed;
         }
@@ -426,7 +593,7 @@ namespace MurkysRustBoot
                 }
             }
         }
-        
+
         private void btn_Kick_Player_Click(object sender, RoutedEventArgs e)
         {
             Player player = list_Players.SelectedItem as Player;
@@ -530,10 +697,77 @@ namespace MurkysRustBoot
             Player player = list_Players.SelectedItem as Player;
             if (player != null)
             {
-                if (MessageBox.Show("Really kill " + player.DisplayName + "?", "Kill player?",MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                if (MessageBox.Show("Really kill " + player.DisplayName + "?", "Kill player?", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                 {
                     RCONSendCommand("RustBoot.Kill " + player.UserID.ToString(), true);
                 }
+            }
+        }
+
+        #endregion
+
+        #region Events
+
+        public ObservableCollection<UserEvent> UserEvents;
+
+        void InitUserEvents()
+        {
+            btn_User_Event_Add.IsEnabled = false;
+            UserEvents = new ObservableCollection<UserEvent>();
+            list_User_Events.ItemsSource = UserEvents;
+            UserEvents.CollectionChanged += UserEvents_CollectionChanged;
+        }
+
+        private void UserEvents_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            Console.WriteLine((sender as ObservableCollection<UserEvent>).Count);
+        }
+
+        private void CheckEventCompleted(object sender, EventArgs e)
+        {
+            if (sender is TextBox)
+            {
+                CheckEventIsValid();
+            }
+            else if (sender is ComboBox)
+            {
+                CheckEventIsValid();
+            }
+        }
+
+        UserEvent userEvent;
+
+        void CheckEventIsValid()
+        {
+            if (!string.IsNullOrEmpty(txt_User_Event_Name.Text) && !string.IsNullOrEmpty(txt_User_Event_Interval.Text) && !string.IsNullOrEmpty(txt_User_Event_Command.Text) && txt_User_Event_Interval.Text.ToInt() >= 5)
+            {
+                userEvent = new UserEvent
+                {
+                    Name = txt_User_Event_Name.Text,
+                    Interval = txt_User_Event_Interval.Text.ToInt(),
+                    Command = txt_User_Event_Command.Text,
+                    EventType = combo_User_Event_Type.Text
+                };
+                btn_User_Event_Add.IsEnabled = true;
+            }
+            else
+            {
+                try
+                {
+                    btn_User_Event_Add.IsEnabled = false;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("[CheckEventIsValid] Ops!\n" + ex.Message);
+                }
+            }
+        }
+
+        private void btn_User_Event_Add_Click(object sender, RoutedEventArgs e)
+        {
+            if (userEvent != null)
+            {
+                UserEvents.Add(userEvent);
             }
         }
 
@@ -875,7 +1109,16 @@ namespace MurkysRustBoot
 
         void CheckLastLineForCommand(string path)
         {
-            var lastLine = ReadLines(path).Last();
+            var lastLine = "";
+            try
+            {
+                lastLine = ReadLines(path).Last();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("[CheckLastLineForCommand] Ops!\n" + ex.Message);
+            }
+            
             if (lastLine.Contains("Connected to Steam"))
             {
                 PrintToGeneralLog("Server is running.");
@@ -1022,9 +1265,9 @@ namespace MurkysRustBoot
                 txt_Console.BorderBrush = GetColorBrush("Color_DangerRed");
             }
         }
-        
+
         #endregion
-       
+
         #region Server
 
         bool IsRunning = false;
@@ -1121,7 +1364,7 @@ namespace MurkysRustBoot
                     break;
             }
         }
-        
+
         private string GenerateServerArguments()
         {
             var Settings = Properties.Settings.Default;
@@ -1214,6 +1457,7 @@ namespace MurkysRustBoot
                 DeleteCorePlugin();
                 DisableConsole();
                 txt_Console.IsEnabled = false;
+                CheckServerData(Properties.Settings.Default);
                 if (RCONConnected && RCONCheckConnection())
                 {
                     Console.WriteLine("RCON detected while stopping.");
@@ -1471,21 +1715,33 @@ namespace MurkysRustBoot
 
         private void tabs_Menu_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var selectedTab = (sender as TabControl).SelectedItem as TabItem;
-            if (selectedTab.Header.ToString() == "Plugins")
+            if (e.Source is TabControl)
             {
-                btn_DeletePlugins.Visibility = Visibility.Visible;
-                stack_Btns_Settings_Lower.Margin = new Thickness(0, 0, 0, -40);
-                if (e.Source is TabControl)
+                var selectedTab = (sender as TabControl).SelectedItem as TabItem;
+
+                if (selectedTab.Header.ToString() == "Plugins")
                 {
-                    e.Handled = true;
-                    RefreshPluginLists();
+                    btn_DeletePlugins.Visibility = Visibility.Visible;
+                    stack_Btns_Settings_Lower.Margin = new Thickness(0, 0, 0, -40);
+                    if (e.Source is TabControl)
+                    {
+                        e.Handled = true;
+                        RefreshPluginLists();
+                    }
                 }
-            }
-            else
-            {
-                btn_DeletePlugins.Visibility = Visibility.Collapsed;
-                stack_Btns_Settings_Lower.Margin = new Thickness(0, 0, 0, 0);
+                else
+                {
+                    btn_DeletePlugins.Visibility = Visibility.Collapsed;
+                    stack_Btns_Settings_Lower.Margin = new Thickness(0, 0, 0, 0);
+                }
+                if (selectedTab.Header.ToString() == "Events")
+                {
+                    btn_StartServer.IsEnabled = false;
+                }
+                else
+                {
+                    btn_StartServer.IsEnabled = true;
+                }
             }
         }
 
@@ -1556,7 +1812,6 @@ namespace MurkysRustBoot
 
 
         #endregion
-
 
     }
 

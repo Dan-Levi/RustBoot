@@ -2,27 +2,27 @@
 {
     public class Player
     {
-        string displayName;
-        ulong userID;
-        string ipAdress;
+        string _displayName;
+        ulong _userID;
+        string _ipAdress;
         
 
         public string IpAdress
         {
-            get { return ipAdress; }
-            set { ipAdress = value; }
+            get { return _ipAdress; }
+            set { _ipAdress = value; }
         }
 
         public string DisplayName
         {
-            get { return displayName; }
-            set { displayName = value; }
+            get { return _displayName; }
+            set { _displayName = value; }
         }
 
         public ulong UserID
         {
-            get { return userID; }
-            set { userID = value; }
+            get { return _userID; }
+            set { _userID = value; }
         }
     }
 }

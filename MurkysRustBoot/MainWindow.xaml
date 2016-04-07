@@ -22,14 +22,41 @@
             <ColumnDefinition MinWidth="200"></ColumnDefinition>
             <ColumnDefinition Width="150"></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <StackPanel Grid.Row="2" Grid.Column="2" HorizontalAlignment="Left" Margin="8,70,0,0">
+
+        <StackPanel x:Name="stack_Side_Panel_Stopped" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Left" Margin="8,0,0,0" Visibility="Collapsed">
+            <Button x:Name="btn_Map_Wipe"  Style="{StaticResource Btn_Template}" Margin="0,0,0,8" Width="30" Height="30" ToolTip="Wipe map" Click="btn_Map_Wipe_Click" >
+                <Image Source="Images/icon_Map_Wipe.png"></Image>
+            </Button>
+            <Button x:Name="btn_BP_Wipe"  Style="{StaticResource Btn_Template}" Margin="0,0,0,8" Width="30" Height="30" ToolTip="Wipe blueprints" Click="btn_BP_Wipe_Click" >
+                <Image Source="Images/icon_BP_Wipe.png"></Image>
+            </Button>
+            <Button x:Name="btn_Logs_Delete"  Style="{StaticResource Btn_Template}" Margin="0,0,0,8" Width="30" Height="30" ToolTip="Delete logs" Click="btn_Logs_Delete_Click" >
+                <Image Source="Images/icon_Log_Delete.png"></Image>
+            </Button>
+            
+        </StackPanel>
+        
+        <StackPanel x:Name="stack_Side_Panel_Running" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Left" Margin="8,70,0,0">
             <Button x:Name="btn_Give_Player"  Style="{StaticResource Btn_Template}" Margin="0,0,0,8" Width="30" Height="30" ToolTip="Give player ..." Click="btn_Give_Player_Click" >
                 <Image Source="Images/icon_Give.png"></Image>
             </Button>
             <Button x:Name="btn_Kill_Player"  Style="{StaticResource Btn_Template}" Margin="0,0,0,8" Width="30" Height="30" ToolTip="Kill player" Click="btn_Kill_Player_Click" >
                 <Image Source="Images/icon_Kill.png"></Image>
             </Button>
+            <Button x:Name="btn_Kick_Player" ToolTip="Kick player" IsEnabled="False" Margin="0,0,0,8" Width="30" Height="30" Style="{StaticResource Btn_Template}" Click="btn_Kick_Player_Click">
+                <Image Source="Images/icon_Kick.png"/>
+            </Button>
+            <Button x:Name="btn_Ban_Player" ToolTip=" Ban player" IsEnabled="False" Margin="0,0,0,8" Width="30" Height="30" Style="{StaticResource Btn_Template}" Click="btn_Ban_Player_Click">
+                <Image Source="Images/icon_Ban.png"/>
+            </Button>
+            <Button x:Name="btn_Moderator_Player" ToolTip="Make moderator" IsEnabled="False" Margin="0,0,0,8" Width="30" Height="30" Style="{StaticResource Btn_Template}" Click="btn_Moderator_Player_Click">
+                <Image Source="Images/icon_Moderator.png"/>
+            </Button>
+            <Button x:Name="btn_Unmoderator_Player" ToolTip="Remove moderation privileges" IsEnabled="False" Margin="0,0,0,8" Width="30" Height="30" Style="{StaticResource Btn_Template}" Click="btn_Unmoderator_Player_Click">
+                <Image Source="Images/icon_Moderator_Remove.png"/>
+            </Button>
         </StackPanel>
+        
         <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="16,0,0,0">
             <Image x:Name="img_RustLogo" Style="{StaticResource Img_HoverTemplate}" Height="25" Source="Images/logo_Rust.png" Cursor="Hand" MouseDown="img_RustLogo_MouseDown"></Image>
             <Image x:Name="img_OxideLogo" Style="{StaticResource Img_HoverTemplate}" Height="30" Source="Images/logo_Oxide.png" Cursor="Hand" Margin="8,0,0,0" MouseDown="img_OxideLogo_MouseDown"></Image>
@@ -58,7 +85,7 @@
         </StackPanel>
         <Button x:Name="btn_SaveSettings" Grid.Row="1" Grid.Column="1" Style="{StaticResource Btn_Template}" Width="60" Height="25" Margin="0,0,68,8"    Background="{StaticResource SuccessGreen}" Foreground="{StaticResource SuccessGreen_Highlighted}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Click="btn_SaveSettings_Click" Content="{StaticResource Save}"/>
         <Button x:Name="btn_ResetSettings" Grid.Row="1" Grid.Column="1" Style="{StaticResource Btn_Template}" Width="60" Height="25"    Background="{StaticResource DangerOrange}" Foreground="{StaticResource DangerOrange_Highlighted}" Margin="0,0,0,8" VerticalAlignment="Bottom" HorizontalAlignment="Right" Click="btn_ResetSettings_Click" Content="{StaticResource Reset}"/>
-        <Border x:Name="Window_Settings" Grid.Row="2" Grid.Column="1" BorderBrush="{StaticResource BorderDarkGreen}" Background="{StaticResource BorderDarkGreen}" BorderThickness="8" Visibility="Collapsed">
+        <Border x:Name="Window_Settings" Grid.Row="2" Grid.Column="1" BorderBrush="{StaticResource BorderDarkGreen}" Background="{StaticResource BorderDarkGreen}" BorderThickness="8">
             <DockPanel LastChildFill="False">
                 <Button x:Name="btn_DeletePlugins" DockPanel.Dock="Bottom" Style="{StaticResource Btn_Template}" Width="50" Background="{StaticResource DangerRed}" Foreground="{StaticResource DangerRed_Highlighted}" HorizontalAlignment="Left" ToolTip="Delete selected plugin(s)" Margin="100,0,0,0" Visibility="Collapsed" IsEnabled="False" Click="btn_DeletePlugins_Click">
                     <Image Source="Images/icon_Trashcan.png" AllowDrop="True"/>
@@ -147,9 +174,6 @@
                     <TabItem Name="tab_Plugins" Header="{StaticResource Plugins}" IsEnabled="False">
                         <Border BorderBrush="Transparent" BorderThickness="5" MinHeight="350">
                             <DockPanel>
-                                <DockPanel DockPanel.Dock="Bottom" Height="200" Visibility="Collapsed">
-
-                                </DockPanel>
                                 <Grid DockPanel.Dock="Top">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width=".5*"/>
@@ -175,6 +199,43 @@
                                 </Grid>
                             </DockPanel>
                         </Border>
+                    </TabItem>
+                    <TabItem Name="tab_User_Events" Header="{StaticResource Events}">
+                        <Border BorderBrush="Transparent" BorderThickness="5" MinHeight="350">
+                            <DockPanel>
+                                <StackPanel Margin="8,0,8,8" DockPanel.Dock="Top" HorizontalAlignment="Center">
+                                    <StackPanel Margin="0,0,0,8" Orientation="Horizontal">
+                                        <TextBlock Margin="0,0,8,0" VerticalAlignment="Center">Event name: </TextBlock>
+                                        <TextBox x:Name="txt_User_Event_Name" Margin="0,0,8,0" Width="100" Style="{StaticResource SettingTextBox}" KeyUp="CheckEventCompleted"/>
+                                        <TextBlock VerticalAlignment="Center" Margin="0,0,8,0">Interval (seconds): </TextBlock>
+                                        <TextBox x:Name="txt_User_Event_Interval" Margin="0,0,8,0" Style="{StaticResource SettingTextBox}" Width="30" KeyUp="CheckEventCompleted" Text="5" ToolTip="Minimum 5 seconds"/>
+                                        <TextBlock VerticalAlignment="Center" Margin="0,0,8,0">Type: </TextBlock>
+                                        <ComboBox x:Name="combo_User_Event_Type" MouseLeave="CheckEventCompleted">
+                                            <ComboBoxItem IsSelected="True">Chatmessage</ComboBoxItem>
+                                            <ComboBoxItem>Console command</ComboBoxItem>
+                                        </ComboBox>
+                                    </StackPanel>
+                                    <StackPanel>
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                            <TextBlock Margin="0,0,8,0">Event: </TextBlock>
+                                            <TextBox x:Name="txt_User_Event_Command" Margin="0,0,8,0" Style="{StaticResource SettingTextBox}" Width="380" KeyUp="CheckEventCompleted" ></TextBox>
+                                            <Button x:Name="btn_User_Event_Add" Style="{StaticResource Btn_Template}" Background="{StaticResource SuccessGreen}" Foreground="{StaticResource SuccessGreen_Highlighted}" Height="20" FontSize="12" Click="btn_User_Event_Add_Click">Add</Button>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </StackPanel>
+                                <ListView x:Name="list_User_Events" Background="{StaticResource BorderDarkGreen}" Foreground="White" BorderThickness="0" BorderBrush="{x:Null}">
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn Width="100" Header="Name" DisplayMemberBinding="{Binding Name}"></GridViewColumn>
+                                            <GridViewColumn Width="50" Header="Interval" DisplayMemberBinding="{Binding Interval}"></GridViewColumn>
+                                            <GridViewColumn Width="120" Header="Type" DisplayMemberBinding="{Binding EventType}"></GridViewColumn>
+                                            <GridViewColumn Header="Command" DisplayMemberBinding="{Binding Command}"></GridViewColumn>
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                            </DockPanel>
+                        </Border>
+
                     </TabItem>
                     <TabItem Header="{StaticResource Misc}">
                         <Border BorderBrush="Transparent" BorderThickness="5">
@@ -204,37 +265,14 @@
                                 <StackPanel Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="4" Orientation="Horizontal">
                                     <TextBox x:Name="txt_Customarguments" Style="{StaticResource SettingTextBox}" Width="280"/>
                                     <TextBlock  Margin="5,0,0,0" FontStyle="Italic" Text="{StaticResource Customargumentsdescription}"/>
-
                                 </StackPanel>
-                            </Grid>
-                        </Border>
-                    </TabItem>
-                    <TabItem Header="Misc" Visibility="Collapsed">
-                        <Border BorderBrush="Transparent" BorderThickness="5">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="20"/>
-                                    <RowDefinition Height="10"/>
-                                    <RowDefinition Height="20"/>
-                                    <RowDefinition Height="10"/>
-                                    <RowDefinition/>
-                                    <RowDefinition/>
-                                    <RowDefinition/>
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="110"/>
-                                    <ColumnDefinition Width="140"/>
-                                    <ColumnDefinition Width="10"/>
-                                    <ColumnDefinition Width="110"/>
-                                    <ColumnDefinition Width="140"/>
-                                </Grid.ColumnDefinitions>
                             </Grid>
                         </Border>
                     </TabItem>
                 </TabControl>
             </DockPanel>
         </Border>
-        <Border x:Name="Window_Running" Grid.Row="2" Grid.Column="1" BorderBrush="{StaticResource BorderDarkGreen}" Background="{StaticResource BorderDarkGreen}" BorderThickness="8">
+        <Border x:Name="Window_Running" Grid.Row="2" Grid.Column="1" BorderBrush="{StaticResource BorderDarkGreen}" Background="{StaticResource BorderDarkGreen}" BorderThickness="8" Visibility="Collapsed">
             <DockPanel>
                 <DockPanel DockPanel.Dock="Bottom" Height="40">
                     <Button x:Name="btn_RustConsole" DockPanel.Dock="Left" Style="{StaticResource Btn_Template}" Width="50" Background="{StaticResource DangerRed}" Foreground="{StaticResource DangerRed_Highlighted}" ToolTip="Toggle Rust Server Console" Click="btn_RustConsole_Click" IsEnabled="False">
@@ -315,22 +353,7 @@
                                     <TextBlock Margin="0,0,4,0">Players:</TextBlock>
                                     <TextBlock x:Name="txt_Playercount">0</TextBlock>
                                 </StackPanel>
-                                <DockPanel Margin="0,0,0,8" DockPanel.Dock="Bottom" Height="20" LastChildFill="False">
-                                    <Button x:Name="btn_Ban_Player" ToolTip=" Ban player" DockPanel.Dock="Right" IsEnabled="False" Margin="0,0,6,0" Background="{StaticResource DangerRed}" Style="{StaticResource Btn_Template}" Height="20" Click="btn_Ban_Player_Click">
-                                        <Image Source="Images/icon_Ban.png"/>
-                                    </Button>
-                                    <Button x:Name="btn_Kick_Player" ToolTip="Kick player" DockPanel.Dock="Right" IsEnabled="False" Background="{StaticResource DangerOrange}" Style="{StaticResource Btn_Template}" Height="20" Click="btn_Kick_Player_Click">
-                                        <Image Source="Images/icon_Kick.png"/>
-                                    </Button>
-                                    <Button x:Name="btn_Moderator_Player" ToolTip="Make moderator" DockPanel.Dock="Left" IsEnabled="False" Background="{StaticResource SuccessGreen}" Style="{StaticResource Btn_Template}" Height="20" Click="btn_Moderator_Player_Click">
-                                        <Image Source="Images/icon_Moderator.png"/>
-                                    </Button>
-                                    <Button x:Name="btn_Unmoderator_Player" ToolTip="Remove moderation privileges" DockPanel.Dock="Left" IsEnabled="False" Background="{StaticResource DangerRed}" Style="{StaticResource Btn_Template}" Height="20" Click="btn_Unmoderator_Player_Click">
-                                        <Image Source="Images/icon_Moderator.png"/>
-                                    </Button>
-                                </DockPanel>
                                 <ListBox x:Name="list_Players" DockPanel.Dock="Bottom" Background="{StaticResource BorderDarkGreen}" Foreground="White" ItemTemplate="{StaticResource TemplatePlayer}" Margin="0,0,6,8" BorderBrush="{StaticResource InfoBlue}" LayoutUpdated="list_Players_LayoutUpdated" SelectionChanged="list_Players_SelectionChanged"/>
-
                             </DockPanel>
                             <Border DockPanel.Dock="Left" Margin="0,8,8,8" BorderBrush="{StaticResource InfoBlue}" BorderThickness="1">
                                 <Grid>

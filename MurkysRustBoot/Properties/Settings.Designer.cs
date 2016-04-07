@@ -252,5 +252,16 @@ namespace MurkysRustBoot.Properties {
                 this["CustomArguments"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Specialized.StringCollection UserEvents {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["UserEvents"]));
+            }
+            set {
+                this["UserEvents"] = value;
+            }
+        }
     }
 }

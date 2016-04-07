@@ -71,8 +71,9 @@
       <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="PresentationFramework.Aero2" />
     <Reference Include="QueryMaster">
-      <HintPath>C:\Users\DanHovedPC\Downloads\QueryMaster\Binaries\QueryMaster.dll</HintPath>
+      <HintPath>_Dependencies\QueryMaster\Binaries\QueryMaster.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -121,6 +122,7 @@
     <Compile Include="Classes\RustBootReport.cs" />
     <Compile Include="Classes\RustItems.cs" />
     <Compile Include="Classes\Settings.cs" />
+    <Compile Include="Classes\UserEvent.cs" />
     <Compile Include="ItemPicker.xaml.cs">
       <DependentUpon>ItemPicker.xaml</DependentUpon>
     </Compile>
@@ -228,6 +230,16 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\icon_Kill.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\icon_BP_Wipe.png" />
+    <Resource Include="Images\icon_Map_Wipe.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\icon_Log_Delete.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\icon_Moderator_Remove.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
