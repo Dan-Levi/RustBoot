@@ -214,22 +214,34 @@
                                             <ComboBoxItem IsSelected="True">Chatmessage</ComboBoxItem>
                                             <ComboBoxItem>Console command</ComboBoxItem>
                                         </ComboBox>
+                                        <Button x:Name="btn_User_Event_Type_Info" Style="{StaticResource Btn_Template}" Width="20" Height="20" Margin="8,0,0,0" Background="{StaticResource InfoBlue}" Foreground="{StaticResource InfoBlue_Highlighted}" Cursor="Help" IsHitTestVisible="True" Click="btn_User_Event_Type_Info_Click">
+                                            <TextBlock Margin="0,-2,0,0">?</TextBlock>
+                                        </Button>
                                     </StackPanel>
                                     <StackPanel>
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                            <TextBlock Margin="0,0,8,0">Event: </TextBlock>
-                                            <TextBox x:Name="txt_User_Event_Command" Margin="0,0,8,0" Style="{StaticResource SettingTextBox}" Width="380" KeyUp="CheckEventCompleted" ></TextBox>
-                                            <Button x:Name="btn_User_Event_Add" Style="{StaticResource Btn_Template}" Background="{StaticResource SuccessGreen}" Foreground="{StaticResource SuccessGreen_Highlighted}" Height="20" FontSize="12" Click="btn_User_Event_Add_Click">Add</Button>
+                                            <TextBlock x:Name="txt_User_Event_Command_Label" Margin="0,0,8,0">ChatMessage: </TextBlock>
+                                            <TextBox x:Name="txt_User_Event_Command" Margin="0,0,8,0" Style="{StaticResource SettingTextBox}" Width="320" Height="60" KeyUp="CheckEventCompleted" ></TextBox>
+                                            <Button x:Name="btn_User_Event_Add" Style="{StaticResource Btn_Template}" Background="{StaticResource SuccessGreen}" Foreground="{StaticResource SuccessGreen_Highlighted}" Height="40" Width="50" FontSize="12" Click="btn_User_Event_Add_Click">Add</Button>
                                         </StackPanel>
                                     </StackPanel>
                                 </StackPanel>
-                                <ListView x:Name="list_User_Events" Background="{StaticResource BorderDarkGreen}" Foreground="White" BorderThickness="0" BorderBrush="{x:Null}">
+                                <ListView x:Name="list_User_Events" Background="{StaticResource BorderDarkGreen}" ItemContainerStyle="{StaticResource list_User_Selected_Event}" Foreground="White" BorderThickness="0" BorderBrush="{x:Null}" SelectionMode="Single">
                                     <ListView.View>
-                                        <GridView>
+                                        <GridView AllowsColumnReorder="False">
                                             <GridViewColumn Width="100" Header="Name" DisplayMemberBinding="{Binding Name}"></GridViewColumn>
                                             <GridViewColumn Width="50" Header="Interval" DisplayMemberBinding="{Binding Interval}"></GridViewColumn>
-                                            <GridViewColumn Width="120" Header="Type" DisplayMemberBinding="{Binding EventType}"></GridViewColumn>
+                                            <GridViewColumn Width="160" Header="Type" DisplayMemberBinding="{Binding EventType}"></GridViewColumn>
                                             <GridViewColumn Header="Command" DisplayMemberBinding="{Binding Command}"></GridViewColumn>
+                                            <GridViewColumn>
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <Button x:Name="btn_list_user_Event_Delete" Style="{StaticResource Btn_Template}" Background="{StaticResource DangerRed}" Click="btn_list_user_Event_Delete_Click" Height="20" Width="20">
+                                                            <TextBlock Margin="0,-2,0,0">X</TextBlock>
+                                                        </Button>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
                                         </GridView>
                                     </ListView.View>
                                 </ListView>

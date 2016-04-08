@@ -55,14 +55,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="MurkysRustBoot.exe" size="2307072">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="MurkysRustBoot.exe" size="2311168">
       <assemblyIdentity name="MurkysRustBoot" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>FfS7yJ26dmNLm0sE9fst40cJyF/71P3UbSNVd2wJUiA=</dsig:DigestValue>
+        <dsig:DigestValue>6iW+tcUahhPRhG8qdYVbpb6A1zl68GV+eDqvKFMPsBs=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -99,13 +99,13 @@
       <dsig:DigestValue>ALLERZsasZrHZAra6RimUON/KEXmYr8cpoeN91WAgv0=</dsig:DigestValue>
     </hash>
   </file>
-  <file name="MurkysRustBoot.exe.config" size="3269">
+  <file name="MurkysRustBoot.exe.config" size="3362">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>rXUoT13MfbYTcer7rOCBpv8iN+ksF2q5dZJth6WuMsw=</dsig:DigestValue>
+      <dsig:DigestValue>/vBipVATAHeex71UDDwP0zW8V1HcVXOj9RXlBaTs3Fs=</dsig:DigestValue>
     </hash>
   </file>
 </asmv1:assembly>

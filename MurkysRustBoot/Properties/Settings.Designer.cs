@@ -255,9 +255,10 @@ namespace MurkysRustBoot.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.Collections.Specialized.StringCollection UserEvents {
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string UserEvents {
             get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["UserEvents"]));
+                return ((string)(this["UserEvents"]));
             }
             set {
                 this["UserEvents"] = value;

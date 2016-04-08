@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MurkysRustBoot"
         mc:Ignorable="d"
-        Title="ItemPicker" Height="550" Width="550" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" AllowsTransparency="True" WindowStyle="None" MouseDown="window_ItemPicker_MouseDown">
+        Title="ItemPicker" Height="550" Width="550" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" AllowsTransparency="True" WindowStyle="None" MouseDown="window_ItemPicker_MouseDown" Closing="window_ItemPicker_Closing">
     <Grid>
         <Grid.Background>
             <ImageBrush ImageSource="Images/bg_Rust.png"/>

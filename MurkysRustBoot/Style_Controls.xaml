@@ -83,5 +83,16 @@
         <Setter Property="TextAlignment" Value="Center"/>
         <Setter Property="BorderThickness" Value="0"/>
     </Style>
-    
+    <Style x:Key="list_User_Selected_Event" TargetType="{x:Type ListViewItem}" >
+        <Setter Property="Height" Value="30"/>
+        <Setter Property="Background" Value="{StaticResource BorderDarkGreen}"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{StaticResource BorderDarkGreen}"/>
+            </Trigger>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Background" Value="{StaticResource BorderDarkGreen}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
 </ResourceDictionary>

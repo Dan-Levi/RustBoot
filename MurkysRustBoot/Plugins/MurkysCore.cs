@@ -6,7 +6,7 @@ using System.Linq;
 namespace Oxide.Plugins
 {
 
-    [Info("Murkys Core", "Murky", 0.1)]
+    [Info("Murkys Core", "Murky", 0.2)]
     [Description("Core plugin used in combination of RustBoot")]
     class MurkysCore : RustPlugin
     {

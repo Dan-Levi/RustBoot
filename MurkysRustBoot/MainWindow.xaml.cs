@@ -39,6 +39,7 @@ namespace MurkysRustBoot
 
         private void InitApp()
         {
+            CheckForDLLs();
             DataContext = this;
             Window_Settings.Visibility = Visibility.Visible;
             stack_Side_Panel_Stopped.Visibility = Visibility.Visible;
@@ -47,7 +48,7 @@ namespace MurkysRustBoot
             DeleteCorePlugin();
             DisablePlayerActions();
             LoadSettings();
-            CheckSettings();
+            CheckSettings(); 
             InitUserEvents();
         }
 
@@ -113,9 +114,16 @@ namespace MurkysRustBoot
                 }
                 else
                 {
-                    if (serverProcess != null && serverProcess.MainWindowHandle != IntPtr.Zero)
+                    try
                     {
-                        serverProcess.CloseMainWindow();
+                        if (serverProcess != null && serverProcess.MainWindowHandle != IntPtr.Zero)
+                        {
+                            serverProcess.CloseMainWindow();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("[RustBoot_Closing] Ops!\n" + ex.Message);
                     }
                 }
             }
@@ -201,10 +209,17 @@ namespace MurkysRustBoot
             Settings.Headerimage = txt_Headerimage.Text;
             Settings.Url = txt_Url.Text;
             Settings.Rustserverexecutable = txt_Rustserverexecutable.Text;
-            var serverPath = Path.Combine(Path.GetDirectoryName(Settings.Rustserverexecutable), "server", Settings.Identity);
-            if (!Directory.Exists(serverPath))
+            try
             {
-                Directory.CreateDirectory(serverPath);
+                var serverPath = Path.Combine(Path.GetDirectoryName(Settings.Rustserverexecutable), "server", Settings.Identity);
+                if (!Directory.Exists(serverPath))
+                {
+                    Directory.CreateDirectory(serverPath);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("[SaveSettings] Ops!\n" + ex.Message);
             }
             Settings.CustomArguments = txt_Customarguments.Text;
             Settings.Save();
@@ -259,6 +274,10 @@ namespace MurkysRustBoot
             var Settings = Properties.Settings.Default;
             if (!string.IsNullOrEmpty(Settings.Rustserverexecutable))
             {
+                if (!File.Exists(Settings.Rustserverexecutable))
+                {
+                    Console.WriteLine("[CheckSettings] Ops!\n" + "Executable not present!");
+                }
                 tab_Plugins.IsEnabled = true;
                 btn_SaveSettings.IsEnabled = true;
                 if (!string.IsNullOrEmpty(Settings.Hostname) && Settings.Maxplayers > 0 && Settings.Worldsize > 0 && Settings.Seed.ToString().Length == 5)
@@ -293,7 +312,7 @@ namespace MurkysRustBoot
             {
                 tab_Plugins.IsEnabled = false;
                 btn_StartServer.IsEnabled = false;
-                btn_Rustserverexecutable_Click(btn_StartServer as object, new RoutedEventArgs());
+                btn_Rustserverexecutable_Click(btn_Rustserverexecutable as object, new RoutedEventArgs());
             }
         }
 
@@ -667,8 +686,10 @@ namespace MurkysRustBoot
             {
                 ItemPicker ip = new ItemPicker();
                 ip.Owner = this;
+                Opacity = 0.4;
                 if (ip.ShowDialog() == true)
                 {
+                    Opacity = 1;
                     if (ip.RustItemsToGive != null)
                     {
                         new Thread(() =>
@@ -712,15 +733,39 @@ namespace MurkysRustBoot
 
         void InitUserEvents()
         {
+            
             btn_User_Event_Add.IsEnabled = false;
             UserEvents = new ObservableCollection<UserEvent>();
+            if (!string.IsNullOrEmpty(Properties.Settings.Default.UserEvents))
+            {
+                try
+                {
+                    JsonConvert.DeserializeObject<List<UserEvent>>(Properties.Settings.Default.UserEvents).ForEach(x =>
+                    {
+                        if (x != null)
+                        {
+                            UserEvents.Add(x);
+                        }
+                    });
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("[InitUserEvents] Ops!\n" +ex.Message);
+                }
+            }
+            else
+            {
+                UserEvents.Add(new UserEvent("Message of the day",60, "We are having a <color=\"green\">great day</color> saying hello every minute!", "Chatmessage"));
+            }
             list_User_Events.ItemsSource = UserEvents;
             UserEvents.CollectionChanged += UserEvents_CollectionChanged;
         }
 
         private void UserEvents_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            Console.WriteLine((sender as ObservableCollection<UserEvent>).Count);
+            string json = JsonConvert.SerializeObject(UserEvents.Cast<UserEvent>().ToList());
+            Properties.Settings.Default.UserEvents = json;
+            Properties.Settings.Default.Save();
         }
 
         private void CheckEventCompleted(object sender, EventArgs e)
@@ -731,6 +776,9 @@ namespace MurkysRustBoot
             }
             else if (sender is ComboBox)
             {
+                txt_User_Event_Command_Label.Text = combo_User_Event_Type.Text + ": ";
+                txt_User_Event_Command.Height = combo_User_Event_Type.Text != "Chatmessage" ? 20 : 60;
+                btn_User_Event_Add.Height = combo_User_Event_Type.Text != "Chatmessage" ? 20 : 40;
                 CheckEventIsValid();
             }
         }
@@ -742,12 +790,12 @@ namespace MurkysRustBoot
             if (!string.IsNullOrEmpty(txt_User_Event_Name.Text) && !string.IsNullOrEmpty(txt_User_Event_Interval.Text) && !string.IsNullOrEmpty(txt_User_Event_Command.Text) && txt_User_Event_Interval.Text.ToInt() >= 5)
             {
                 userEvent = new UserEvent
-                {
-                    Name = txt_User_Event_Name.Text,
-                    Interval = txt_User_Event_Interval.Text.ToInt(),
-                    Command = txt_User_Event_Command.Text,
-                    EventType = combo_User_Event_Type.Text
-                };
+                (
+                    txt_User_Event_Name.Text,
+                    txt_User_Event_Interval.Text.ToInt(),
+                    txt_User_Event_Command.Text,
+                    combo_User_Event_Type.Text
+                );
                 btn_User_Event_Add.IsEnabled = true;
             }
             else
@@ -767,7 +815,44 @@ namespace MurkysRustBoot
         {
             if (userEvent != null)
             {
+
                 UserEvents.Add(userEvent);
+            }
+        }
+
+        void RunUserEvents()
+        {
+            foreach (var userEvent in UserEvents)
+            {
+                System.Timers.Timer timer = new System.Timers.Timer {
+                    Interval = ((double)userEvent.Interval * 1000),
+                    AutoReset = true
+                };
+                var commandPrefix = userEvent.EventType == "Chatmessage" ? "say " : "";
+                timer.Elapsed += (o, e) =>
+                {
+                    if (RCONConnected)
+                    {
+                        RCONSendCommand(commandPrefix + userEvent.Command, true);
+                    }
+                };
+                timer.Start();
+            }
+        }
+
+
+        private void btn_User_Event_Type_Info_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("http://oxidemod.org/threads/server-commands-for-rust.6404/");
+        }
+
+        private void btn_list_user_Event_Delete_Click(object sender, RoutedEventArgs e)
+        {
+            var btn = (sender as Button);
+            UserEvent userEvent = btn.DataContext as UserEvent;
+            if (userEvent != null)
+            {
+                UserEvents.Remove(userEvent);
             }
         }
 
@@ -1118,12 +1203,13 @@ namespace MurkysRustBoot
             {
                 Console.WriteLine("[CheckLastLineForCommand] Ops!\n" + ex.Message);
             }
-            
+
             if (lastLine.Contains("Connected to Steam"))
             {
                 PrintToGeneralLog("Server is running.");
                 EnableConsole();
                 RCONInitConnect();
+                RunUserEvents();
             }
             if (lastLine.Contains("Couldn't Start Server."))
             {
@@ -1304,7 +1390,6 @@ namespace MurkysRustBoot
         private void InitLaunch()
         {
             SwitchWindowLayout(ServerState.RUNNING);
-            CheckForDLLs();
             StartServerThread();
         }
 
@@ -1525,30 +1610,40 @@ namespace MurkysRustBoot
 
         private void StartProcessWorker()
         {
-            BackgroundWorker worker = new BackgroundWorker();
-            worker.WorkerReportsProgress = true;
-            worker.WorkerSupportsCancellation = true;
-            worker.DoWork += (sender, e) =>
+            if (!File.Exists(Properties.Settings.Default.Rustserverexecutable))
             {
-                serverProcess.Start();
-                while (serverProcess.MainWindowHandle == IntPtr.Zero)
-                {
-                    Thread.Yield();
-                }
-                (sender as BackgroundWorker).ReportProgress(0, "HideProcessWindow");
-            };
-            worker.ProgressChanged += (o, e) =>
+                SwitchWindowLayout(ServerState.STOPPED);
+                MessageBox.Show("Ops!\nCouldnt locate Rust Server executable. Has the server moved?");
+                btn_Rustserverexecutable_Click(btn_Rustserverexecutable as object, new RoutedEventArgs());
+            }
+            else
             {
-                if (!string.IsNullOrEmpty(e.UserState as string))
+                BackgroundWorker worker = new BackgroundWorker();
+                worker.WorkerReportsProgress = true;
+                worker.WorkerSupportsCancellation = true;
+                worker.DoWork += (sender, e) =>
                 {
-                    var workerMsg = e.UserState as string;
-                    if (workerMsg == "HideProcessWindow")
+                    serverProcess.Start();
+                    while (serverProcess.MainWindowHandle == IntPtr.Zero)
                     {
-                        ShowWindow(serverProcess.MainWindowHandle.ToInt32(), SW_HIDE);
+                        Thread.Yield();
                     }
-                }
-            };
-            worker.RunWorkerAsync();
+                    (sender as BackgroundWorker).ReportProgress(0, "HideProcessWindow");
+                };
+                worker.ProgressChanged += (o, e) =>
+                {
+                    if (!string.IsNullOrEmpty(e.UserState as string))
+                    {
+                        var workerMsg = e.UserState as string;
+                        if (workerMsg == "HideProcessWindow")
+                        {
+                            ShowWindow(serverProcess.MainWindowHandle.ToInt32(), SW_HIDE);
+                        }
+                    }
+                };
+                worker.RunWorkerAsync();
+            }
+
         }
 
         #endregion
@@ -1811,8 +1906,11 @@ namespace MurkysRustBoot
 
 
 
+
+
         #endregion
 
+        
     }
 
     public static class ExtensionMethods

@@ -3,14 +3,14 @@
                     xmlns:local="clr-namespace:MurkysRustBoot"
                     xmlns:my="clr-namespace:System;assembly=mscorlib">
     
-    <my:String x:Key="AppVersion">0.0.6</my:String>
+    <my:String x:Key="AppVersion">0.0.8</my:String>
     <my:String x:Key="AppName">Murky's RustBoot</my:String>
     
     <!--#region Main tabs-->
 
     <my:String x:Key="General">General</my:String>
     <my:String x:Key="Plugins">Plugins</my:String>
-    <my:String x:Key="Events">Events</my:String>
+    <my:String x:Key="Events">Timed events</my:String>
     <my:String x:Key="Misc">Misc</my:String>
     
     <!--#endregion-->
@@ -48,8 +48,5 @@
 
 
     <!--#endregion-->
-    
-
-
     
 </ResourceDictionary>

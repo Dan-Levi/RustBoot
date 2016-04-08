@@ -21,7 +21,8 @@
             </TextBlock.ToolTip>
         </TextBlock>
     </DataTemplate>
-   
+
+    
     <DataTemplate x:Key="TemplatePickedRustItem">
         <TextBlock Text="{Binding DisplayName}"></TextBlock>
     </DataTemplate>

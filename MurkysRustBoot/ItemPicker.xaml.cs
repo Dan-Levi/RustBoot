@@ -246,7 +246,10 @@ namespace MurkysRustBoot
             }
         }
 
-
+        private void window_ItemPicker_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            DialogResult = true;
+        }
     }
 }
 public static class ExtensionMethods
