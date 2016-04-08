@@ -2,14 +2,15 @@
 
 Murky's RustBoot is a small but powerful portable server utility and launcher that lets you setup and maintain your Oxide powered Rust server without dealing with arguments and bat files.
 
-## Features
+## Current features
 
-1. Easy configuration and boot for Oxide powered Rust Dedicated Servers
-2. Easy setup of boot arguments in an intuitive user interface
-3. Drag and drop and activation, deactivation of plugins
-4. Realtime monitoring of logs
-5. Realtime monitoring of chat
-6. Realtime monitoring of players
+1. Boot configuration in an intuitive user interface
+2. Drag and drop enabled plugin GUI for adding, removing, activating and deactivating plugins
+3. Timed events. A great tool for automating announcements and events without the need of extra plugins
+4. Realtime monitoring of logs. Look at the logs directly in the app at any given time in realtime
+5. Player moderation. kick, ban, moderator, unmoderator.
+6. Itembrowser. Give players items and blueprints through
+7 .Realtime monitoring of chat messages
 
 ## Motivation
 
