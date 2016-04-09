@@ -21,6 +21,22 @@
             </TextBlock.ToolTip>
         </TextBlock>
     </DataTemplate>
+    <DataTemplate x:Key="TemplateBannedPlayer">
+        <StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Name: "/>
+                <TextBlock Text="{Binding DisplayName}"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="UserID: "/>
+                <TextBlock Text="{Binding UserID}"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="IP: "/>
+                <TextBlock Text="{Binding IpAdress}"/>
+            </StackPanel>
+        </StackPanel>
+    </DataTemplate>
 
     
     <DataTemplate x:Key="TemplatePickedRustItem">

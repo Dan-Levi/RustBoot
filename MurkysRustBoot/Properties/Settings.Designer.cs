@@ -264,5 +264,17 @@ namespace MurkysRustBoot.Properties {
                 this["UserEvents"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string BanList {
+            get {
+                return ((string)(this["BanList"]));
+            }
+            set {
+                this["BanList"] = value;
+            }
+        }
     }
 }

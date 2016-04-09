@@ -7,6 +7,11 @@
         mc:Ignorable="d"
         xmlns:my="clr-namespace:System;assembly=mscorlib"
         Title="Murky's RustBoot" Width="860" MinWidth="860" MinHeight="600" Height="550" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Closing="RustBoot_Closing" AllowsTransparency="True" WindowStyle="None" StateChanged="RustBoot_StateChanged" MouseDown="RustBoot_MouseDown">
+    <Window.Resources>
+        <Style TargetType="ListViewItem">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        </Style>
+    </Window.Resources>
     <Grid>
         <Grid.Background>
             <ImageBrush ImageSource="Images/bg_Rust.png"/>
@@ -33,10 +38,14 @@
             <Button x:Name="btn_Logs_Delete"  Style="{StaticResource Btn_Template}" Margin="0,0,0,8" Width="30" Height="30" ToolTip="Delete logs" Click="btn_Logs_Delete_Click" >
                 <Image Source="Images/icon_Log_Delete.png"></Image>
             </Button>
-            
         </StackPanel>
-        
-        <StackPanel x:Name="stack_Side_Panel_Running" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Left" Margin="8,70,0,0">
+
+        <StackPanel x:Name="stack_Side_Panel_Stopped_Left" Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right" Margin="0,0,8,0">
+            <Button x:Name="btn_Settings_Import" Style="{StaticResource Btn_Template}" Width="60"   Background="{StaticResource SuccessGreen}" Margin="0,0,0,8" Foreground="{StaticResource SuccessGreen_Highlighted}" Content="Import" ToolTip="Import server settings" Click="btn_Settings_Import_Click"/>
+            <Button x:Name="btn_Settings_Export" Style="{StaticResource Btn_Template}" Width="60"   Background="{StaticResource InfoBlue}" Margin="0,0,0,8" Foreground="{StaticResource InfoBlue_Highlighted}" Content="Export" ToolTip="Export server settings" Click="btn_Settings_Export_Click"/>
+        </StackPanel>
+
+        <StackPanel x:Name="stack_Side_Panel_Running_Right" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Left" Margin="8,70,0,0">
             <Button x:Name="btn_Give_Player"  Style="{StaticResource Btn_Template}" Margin="0,0,0,8" Width="30" Height="30" ToolTip="Give player ..." Click="btn_Give_Player_Click" >
                 <Image Source="Images/icon_Give.png"></Image>
             </Button>
@@ -46,8 +55,11 @@
             <Button x:Name="btn_Kick_Player" ToolTip="Kick player" IsEnabled="False" Margin="0,0,0,8" Width="30" Height="30" Style="{StaticResource Btn_Template}" Click="btn_Kick_Player_Click">
                 <Image Source="Images/icon_Kick.png"/>
             </Button>
-            <Button x:Name="btn_Ban_Player" ToolTip=" Ban player" IsEnabled="False" Margin="0,0,0,8" Width="30" Height="30" Style="{StaticResource Btn_Template}" Click="btn_Ban_Player_Click">
+            <Button x:Name="btn_Ban_Player" ToolTip="Ban player" IsEnabled="False" Margin="0,0,0,8" Width="30" Height="30" Style="{StaticResource Btn_Template}" Click="btn_Ban_Player_Click">
                 <Image Source="Images/icon_Ban.png"/>
+            </Button>
+            <Button x:Name="btn_Unban_Player" ToolTip="Unban player" IsEnabled="False" Margin="0,0,0,8" Width="30" Height="30" Style="{StaticResource Btn_Template}" Click="btn_Unban_Player_Click">
+                <Image Source="Images/icon_Unban.png"/>
             </Button>
             <Button x:Name="btn_Moderator_Player" ToolTip="Make moderator" IsEnabled="False" Margin="0,0,0,8" Width="30" Height="30" Style="{StaticResource Btn_Template}" Click="btn_Moderator_Player_Click">
                 <Image Source="Images/icon_Moderator.png"/>
@@ -85,16 +97,18 @@
         </StackPanel>
         <Button x:Name="btn_SaveSettings" Grid.Row="1" Grid.Column="1" Style="{StaticResource Btn_Template}" Width="60" Height="25" Margin="0,0,68,8"    Background="{StaticResource SuccessGreen}" Foreground="{StaticResource SuccessGreen_Highlighted}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Click="btn_SaveSettings_Click" Content="{StaticResource Save}"/>
         <Button x:Name="btn_ResetSettings" Grid.Row="1" Grid.Column="1" Style="{StaticResource Btn_Template}" Width="60" Height="25"    Background="{StaticResource DangerOrange}" Foreground="{StaticResource DangerOrange_Highlighted}" Margin="0,0,0,8" VerticalAlignment="Bottom" HorizontalAlignment="Right" Click="btn_ResetSettings_Click" Content="{StaticResource Reset}"/>
-        <Border x:Name="Window_Settings" Grid.Row="2" Grid.Column="1" BorderBrush="{StaticResource BorderDarkGreen}" Background="{StaticResource BorderDarkGreen}" BorderThickness="8">
+        <Border x:Name="Window_Settings" Grid.Row="2" Grid.Column="1" BorderBrush="{StaticResource BorderDarkGreen}" Background="{StaticResource BorderDarkGreen}" BorderThickness="8" Visibility="Collapsed">
             <DockPanel LastChildFill="False">
                 <Button x:Name="btn_DeletePlugins" DockPanel.Dock="Bottom" Style="{StaticResource Btn_Template}" Width="50" Background="{StaticResource DangerRed}" Foreground="{StaticResource DangerRed_Highlighted}" HorizontalAlignment="Left" ToolTip="Delete selected plugin(s)" Margin="100,0,0,0" Visibility="Collapsed" IsEnabled="False" Click="btn_DeletePlugins_Click">
                     <Image Source="Images/icon_Trashcan.png" AllowDrop="True"/>
                 </Button>
-                <StackPanel x:Name="stack_Btns_Settings_Lower" DockPanel.Dock="Bottom" Height="40" Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button x:Name="btn_StartServer" Style="{StaticResource Btn_Template}" Width="70"    Background="{StaticResource SuccessGreen}" Foreground="{StaticResource SuccessGreen_Highlighted}" IsEnabled="False" Content="{StaticResource Ready}" Click="btn_StartServer_Click"/>
-                    <Button Style="{StaticResource Btn_Template}" Width="120"   Background="{StaticResource InfoBlue}"     Foreground="{StaticResource InfoBlue_Highlighted}" IsEnabled="False" Content="{StaticResource Restart}"/>
-                    <Button Style="{StaticResource Btn_Template}" Width="60"    Background="{StaticResource DangerRed}"    Foreground="{StaticResource DangerRed_Highlighted}" IsEnabled="False" Margin="0" Content="{StaticResource Stop}"/>
-                </StackPanel>
+                <DockPanel x:Name="dock_Btns_Settings_Lower" DockPanel.Dock="Bottom">
+                    <StackPanel DockPanel.Dock="Right" Height="40" Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button x:Name="btn_StartServer" Style="{StaticResource Btn_Template}" Width="70"    Background="{StaticResource SuccessGreen}" Foreground="{StaticResource SuccessGreen_Highlighted}" IsEnabled="False" Content="{StaticResource Ready}" Click="btn_StartServer_Click"/>
+                        <Button Style="{StaticResource Btn_Template}" Width="120"   Background="{StaticResource InfoBlue}"     Foreground="{StaticResource InfoBlue_Highlighted}" IsEnabled="False" Content="{StaticResource Restart}"/>
+                        <Button Style="{StaticResource Btn_Template}" Width="60"    Background="{StaticResource DangerRed}"    Foreground="{StaticResource DangerRed_Highlighted}" IsEnabled="False" Margin="0" Content="{StaticResource Stop}"/>
+                    </StackPanel>
+                </DockPanel>
                 <TabControl x:Name="tabs_Menu" DockPanel.Dock="Top" Background="Transparent" BorderThickness="0" SelectionChanged="tabs_Menu_SelectionChanged">
                     <TabControl.Resources>
                         <Style TargetType="TabPanel">
@@ -227,9 +241,10 @@
                                     </StackPanel>
                                 </StackPanel>
                                 <ListView x:Name="list_User_Events" Background="{StaticResource BorderDarkGreen}" ItemContainerStyle="{StaticResource list_User_Selected_Event}" Foreground="White" BorderThickness="0" BorderBrush="{x:Null}" SelectionMode="Single">
+                                    
                                     <ListView.View>
                                         <GridView AllowsColumnReorder="False">
-                                            <GridViewColumn Width="100" Header="Name" DisplayMemberBinding="{Binding Name}"></GridViewColumn>
+                                            <GridViewColumn x:Name="list_user_Event_Name_Column" Header="Name" DisplayMemberBinding="{Binding Name}" />
                                             <GridViewColumn Width="50" Header="Interval" DisplayMemberBinding="{Binding Interval}"></GridViewColumn>
                                             <GridViewColumn Width="160" Header="Type" DisplayMemberBinding="{Binding EventType}"></GridViewColumn>
                                             <GridViewColumn Header="Command" DisplayMemberBinding="{Binding Command}"></GridViewColumn>
@@ -245,6 +260,7 @@
                                         </GridView>
                                     </ListView.View>
                                 </ListView>
+                                
                             </DockPanel>
                         </Border>
 
@@ -284,7 +300,7 @@
                 </TabControl>
             </DockPanel>
         </Border>
-        <Border x:Name="Window_Running" Grid.Row="2" Grid.Column="1" BorderBrush="{StaticResource BorderDarkGreen}" Background="{StaticResource BorderDarkGreen}" BorderThickness="8" Visibility="Collapsed">
+        <Border x:Name="Window_Running" Grid.Row="2" Grid.Column="1" BorderBrush="{StaticResource BorderDarkGreen}" Background="{StaticResource BorderDarkGreen}" BorderThickness="8">
             <DockPanel>
                 <DockPanel DockPanel.Dock="Bottom" Height="40">
                     <Button x:Name="btn_RustConsole" DockPanel.Dock="Left" Style="{StaticResource Btn_Template}" Width="50" Background="{StaticResource DangerRed}" Foreground="{StaticResource DangerRed_Highlighted}" ToolTip="Toggle Rust Server Console" Click="btn_RustConsole_Click" IsEnabled="False">
@@ -359,35 +375,62 @@
                     </TabItem>
 
                     <TabItem x:Name="tab_Players" Header="Players">
-                        <DockPanel>
-                            <DockPanel Width="170" DockPanel.Dock="Right">
-                                <StackPanel Margin="0,8,8,8" DockPanel.Dock="Top" Orientation="Horizontal">
-                                    <TextBlock Margin="0,0,4,0">Players:</TextBlock>
-                                    <TextBlock x:Name="txt_Playercount">0</TextBlock>
-                                </StackPanel>
-                                <ListBox x:Name="list_Players" DockPanel.Dock="Bottom" Background="{StaticResource BorderDarkGreen}" Foreground="White" ItemTemplate="{StaticResource TemplatePlayer}" Margin="0,0,6,8" BorderBrush="{StaticResource InfoBlue}" LayoutUpdated="list_Players_LayoutUpdated" SelectionChanged="list_Players_SelectionChanged"/>
-                            </DockPanel>
-                            <Border DockPanel.Dock="Left" Margin="0,8,8,8" BorderBrush="{StaticResource InfoBlue}" BorderThickness="1">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition />
-                                        <ColumnDefinition />
-                                        <ColumnDefinition />
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="20"/>
-                                        <RowDefinition Height="20"/>
-                                        <RowDefinition/>
-                                    </Grid.RowDefinitions>
-                                    <TextBlock Text="Username" Grid.Row="0" Grid.Column="0" Style="{StaticResource PlayerInfoField}"/>
-                                    <TextBlock Text="User ID" Grid.Row="0" Grid.Column="1" Style="{StaticResource PlayerInfoField}" Margin="41,-1,41,1"/>
-                                    <TextBlock Text="IP adress" Grid.Row="0" Grid.Column="2" Style="{StaticResource PlayerInfoField}"/>
-                                    <TextBox x:Name="txt_Players_Info_Username" IsReadOnly="True" Style="{StaticResource SelectableInfoText}" Grid.Row="1" Grid.Column="0"/>
-                                    <TextBox Name="txt_Players_Info_UserID" IsReadOnly="True" Style="{StaticResource SelectableInfoText}" Grid.Row="1" Grid.Column="1"/>
-                                    <TextBox x:Name="txt_Players_Info_IP_Adress" IsReadOnly="True" Style="{StaticResource SelectableInfoText}" Grid.Row="1" Grid.Column="3"/>
-                                </Grid>
-                            </Border>
-                        </DockPanel>
+                        <TabControl x:Name="tabs_Players_Info" BorderThickness="0" Background="{StaticResource BorderDarkGreen}" SelectionChanged="tabs_Players_Info_SelectionChanged">
+                            <TabControl.Resources>
+                                <Style TargetType="TabPanel">
+                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                </Style>
+                                <Style TargetType="TabItem">
+                                    <Setter Property="Template" Value="{DynamicResource tabs_Item}"/>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter Property="Foreground" Value="{StaticResource InfoBlue_Highlighted}"></Setter>
+                                        </Trigger>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Foreground" Value="{StaticResource InfoBlue_Highlighted}"></Setter>
+                                        </Trigger>
+                                        <Trigger Property="IsSelected" Value="False">
+                                            <Setter Property="Foreground" Value="{StaticResource InfoBlue_Highlighted}"></Setter>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TabControl.Resources>
+                            <TabItem Header="Player info">
+                                <DockPanel>
+                                    <DockPanel Width="170" DockPanel.Dock="Right">
+                                        <StackPanel Margin="0,8,8,8" DockPanel.Dock="Top" Orientation="Horizontal">
+                                            <TextBlock Margin="0,0,4,0">Players:</TextBlock>
+                                            <TextBlock x:Name="txt_Playercount">0</TextBlock>
+                                        </StackPanel>
+                                        <ListBox x:Name="list_Players" DockPanel.Dock="Bottom" Background="{StaticResource BorderDarkGreen}" Foreground="White" ItemTemplate="{StaticResource TemplatePlayer}" Margin="0,0,6,8" BorderBrush="{StaticResource InfoBlue}" LayoutUpdated="list_Players_LayoutUpdated" SelectionChanged="list_Players_SelectionChanged"/>
+                                    </DockPanel>
+                                    <Border DockPanel.Dock="Left" Margin="0,8,8,8" BorderBrush="{StaticResource InfoBlue}" BorderThickness="1">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition />
+                                                <ColumnDefinition />
+                                                <ColumnDefinition />
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="20"/>
+                                                <RowDefinition Height="20"/>
+                                                <RowDefinition/>
+                                            </Grid.RowDefinitions>
+                                            <TextBlock Text="Username" Grid.Row="0" Grid.Column="0" Style="{StaticResource PlayerInfoField}"/>
+                                            <TextBlock Text="User ID" Grid.Row="0" Grid.Column="1" Style="{StaticResource PlayerInfoField}" Margin="41,-1,41,1"/>
+                                            <TextBlock Text="IP adress" Grid.Row="0" Grid.Column="2" Style="{StaticResource PlayerInfoField}"/>
+                                            <TextBox x:Name="txt_Players_Info_Username" IsReadOnly="True" Style="{StaticResource SelectableInfoText}" Grid.Row="1" Grid.Column="0"/>
+                                            <TextBox Name="txt_Players_Info_UserID" IsReadOnly="True" Style="{StaticResource SelectableInfoText}" Grid.Row="1" Grid.Column="1"/>
+                                            <TextBox x:Name="txt_Players_Info_IP_Adress" IsReadOnly="True" Style="{StaticResource SelectableInfoText}" Grid.Row="1" Grid.Column="3"/>
+                                        </Grid>
+                                    </Border>
+                                </DockPanel>
+                            </TabItem>
+                            <TabItem x:Name="tab_Ban_List" Header="Ban list">
+                                <ListBox x:Name="list_Banned_Players" Background="{StaticResource BorderDarkGreen}" Foreground="White" BorderThickness="0" ItemTemplate="{StaticResource TemplateBannedPlayer}" SelectionChanged="list_Banned_Players_SelectionChanged"/>
+                            </TabItem>
+                        </TabControl>
+                        
                     </TabItem>
                 </TabControl>
             </DockPanel>

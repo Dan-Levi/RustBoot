@@ -1,6 +1,6 @@
 ## Synopsis
 
-Murky's RustBoot is a small but powerful portable server utility and launcher that lets you setup and maintain your Oxide powered Rust server without dealing with arguments and bat files.
+RustBoot is a small but powerful server utility that lets you setup and maintain your Oxide powered Rust server in an intuitive user interface.
 
 ## Current features
 
@@ -8,9 +8,9 @@ Murky's RustBoot is a small but powerful portable server utility and launcher th
 2. Drag and drop enabled plugin GUI for adding, removing, activating and deactivating plugins
 3. Timed events. A great tool for automating announcements and events without the need of extra plugins
 4. Realtime monitoring of logs. Look at the logs directly in the app at any given time in realtime
-5. Player moderation. kick, ban, moderator, unmoderator.
-6. Itembrowser. Give players items and blueprints through
-7 .Realtime monitoring of chat messages
+5. Player moderation. kick, kill, ban/unban, make moderator, remove moderator privileges
+6. Itembrowser. Give players items and blueprints through the integrated itembrowser
+7. Realtime monitoring of chat messages
 
 ## Motivation
 

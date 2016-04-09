@@ -42,19 +42,29 @@ namespace MurkysRustBoot
             CheckForDLLs();
             DataContext = this;
             Window_Settings.Visibility = Visibility.Visible;
+            stack_Side_Panel_Stopped_Left.Visibility = Visibility.Visible;
             stack_Side_Panel_Stopped.Visibility = Visibility.Visible;
-            stack_Side_Panel_Running.Visibility = Visibility.Collapsed;
+            stack_Side_Panel_Running_Right.Visibility = Visibility.Collapsed;
             Window_Running.Visibility = Visibility.Collapsed;
+            //DEBUGCLEAR();
             DeleteCorePlugin();
             DisablePlayerActions();
             LoadSettings();
-            CheckSettings(); 
+            CheckSettings();
             InitUserEvents();
+        }
+
+        private void DEBUGCLEAR()
+        {
+            Properties.Settings.Default.Reset();
+            Properties.Settings.Default.Save();
+            Close();
         }
 
         private void btn_Rustserverexecutable_Click(object sender, RoutedEventArgs e)
         {
             var Settings = Properties.Settings.Default;
+            MessageBox.Show("Browse to Rust dedicated server executable");
             OpenFileDialog fileDialog = new OpenFileDialog
             {
                 Title = "Rust dedicated server executable",
@@ -189,6 +199,7 @@ namespace MurkysRustBoot
             txt_Url.Text = Settings.Url;
             txt_Rustserverexecutable.Text = Settings.Rustserverexecutable;
             txt_Customarguments.Text = Settings.CustomArguments;
+            
         }
 
         void SaveSettings()
@@ -209,6 +220,10 @@ namespace MurkysRustBoot
             Settings.Headerimage = txt_Headerimage.Text;
             Settings.Url = txt_Url.Text;
             Settings.Rustserverexecutable = txt_Rustserverexecutable.Text;
+            if (BannedPlayers != null)
+            {
+                Settings.BanList = JsonConvert.SerializeObject(BannedPlayers);
+            }
             try
             {
                 var serverPath = Path.Combine(Path.GetDirectoryName(Settings.Rustserverexecutable), "server", Settings.Identity);
@@ -266,6 +281,47 @@ namespace MurkysRustBoot
             {
                 DefaultSettings();
                 MessageBox.Show("Default settings loaded.");
+            }
+        }
+
+        private void btn_Settings_Export_Click(object sender, RoutedEventArgs e)
+        {
+            var json = JsonConvert.SerializeObject(Classes.Settings.Export(), Formatting.Indented);
+            SaveFileDialog fileDialog = new SaveFileDialog();
+            fileDialog.DefaultExt = ".mrbs";
+            fileDialog.Filter = "Murky's RustBoot Settings (.mrbs)|*.mrbs";
+            fileDialog.FileName = txt_Hostname.Text.Sanitize();
+            fileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            if (fileDialog.ShowDialog() == true)
+            {
+                File.WriteAllText(fileDialog.FileName,json);
+            }
+        }
+
+        private void btn_Settings_Import_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog fileDialog = new OpenFileDialog();
+            fileDialog.DefaultExt = ".mrbs";
+            fileDialog.Filter = "Murky's RustBoot Settings (.mrbs)|*.mrbs";
+            fileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            if (fileDialog.ShowDialog() == true)
+            {
+                if (File.Exists(fileDialog.FileName))
+                {
+                    string json = File.ReadAllText(fileDialog.FileName);
+                    Classes.Settings settings = JsonConvert.DeserializeObject<Classes.Settings>(json);
+                    Classes.Settings.Import(settings);
+                    LoadSettings();
+                    UserEvents = new ObservableCollection<UserEvent>();
+                    list_User_Events.ItemsSource = UserEvents;
+                    JsonConvert.DeserializeObject<List<UserEvent>>(Properties.Settings.Default.UserEvents).ForEach(x =>
+                    {
+                        if (x != null)
+                        {
+                            UserEvents.Add(x);
+                        }
+                    });
+                }
             }
         }
 
@@ -383,8 +439,13 @@ namespace MurkysRustBoot
                     lbl_Serverexecutable.Visibility = Visibility.Collapsed;
                     txt_Rustserverexecutable.Visibility = Visibility.Collapsed;
                     Window_Running.Visibility = Visibility.Visible;
-                    stack_Side_Panel_Running.IsEnabled = true;
-                    stack_Side_Panel_Running.Visibility = Visibility.Visible;
+
+                    stack_Side_Panel_Running_Right.IsEnabled = true;
+                    stack_Side_Panel_Running_Right.Visibility = Visibility.Visible;
+
+                    stack_Side_Panel_Stopped_Left.IsEnabled = false;
+                    stack_Side_Panel_Stopped_Left.Visibility = Visibility.Collapsed;
+
                     stack_Side_Panel_Stopped.IsEnabled = false;
                     stack_Side_Panel_Stopped.Visibility = Visibility.Collapsed;
                     break;
@@ -396,8 +457,13 @@ namespace MurkysRustBoot
                     lbl_Serverexecutable.Visibility = Visibility.Visible;
                     txt_Rustserverexecutable.Visibility = Visibility.Visible;
                     Window_Running.Visibility = Visibility.Collapsed;
-                    stack_Side_Panel_Running.IsEnabled = false;
-                    stack_Side_Panel_Running.Visibility = Visibility.Collapsed;
+
+                    stack_Side_Panel_Running_Right.IsEnabled = false;
+                    stack_Side_Panel_Running_Right.Visibility = Visibility.Collapsed;
+
+                    stack_Side_Panel_Stopped_Left.IsEnabled = true;
+                    stack_Side_Panel_Stopped_Left.Visibility = Visibility.Visible;
+
                     stack_Side_Panel_Stopped.IsEnabled = true;
                     stack_Side_Panel_Stopped.Visibility = Visibility.Visible;
                     break;
@@ -515,10 +581,82 @@ namespace MurkysRustBoot
 
         #region Players
 
+        ObservableCollection<Player> _players;
+        public ObservableCollection<Player> Players
+        {
+            get { return _players; }
+            set { _players = value; }
+        }
+
+        public ObservableCollection<Player> BannedPlayers;
+
         private void InitiatePlayerList()
         {
+            btn_Unban_Player.Visibility = Visibility.Collapsed;
             Players = new ObservableCollection<Player>();
             list_Players.ItemsSource = Players;
+            BannedPlayers = new ObservableCollection<Player>();
+            BannedPlayers.CollectionChanged += BannedPlayers_CollectionChanged;
+            list_Banned_Players.ItemsSource = BannedPlayers;
+            try
+            {
+                var bannedPlayers = JsonConvert.DeserializeObject<List<Player>>(Properties.Settings.Default.BanList);
+                if (bannedPlayers.Count != 0)
+                {
+                    bannedPlayers.ForEach(x => { BannedPlayers.Add(x); });
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("[InitiatePlayerList] @ bannedPlayers Ops!\n" + ex.Message);
+            }
+        }
+
+        private void BannedPlayers_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            if (BannedPlayers != null)
+            {
+                var bannedPlayers = BannedPlayers.Cast<Player>().ToList();
+                btn_Ban_Player.IsEnabled = bannedPlayers.Count != 0 ? true : false;
+                var json = JsonConvert.SerializeObject(bannedPlayers);
+                Properties.Settings.Default.BanList = json;
+                Properties.Settings.Default.Save();
+            }
+        }
+
+        private void list_Banned_Players_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.Source is ListBox && (e.Source as ListBox).Name == "list_Banned_Players")
+            {
+                var list_BannedPlayers = (sender as ListBox);
+                btn_Unban_Player.IsEnabled = list_BannedPlayers.SelectedIndex != -1 ? true : false;
+            }
+        }
+
+        private void btn_Unban_Player_Click(object sender, RoutedEventArgs e)
+        {
+            var player = list_Banned_Players.SelectedItem as Player;
+            if (player != null)
+            {
+                if (MessageBox.Show("Unban " + player.DisplayName + "?","Unban player?",MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                {
+                    if (RCONConnected)
+                    {
+                        RCONSendCommand("unban " + player.UserID, true);
+                        BannedPlayers.Remove(player);
+                        MessageBox.Show(player.DisplayName + " is no longer banned");
+                    }
+                }
+            }
+        }
+
+        private void tabs_Players_Info_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.Source is TabControl && (e.Source as TabControl).Name == "tabs_Players_Info")
+            {
+                var tab = (sender as TabControl).SelectedItem as TabItem;
+                btn_Unban_Player.Visibility = tab.Name == "tab_Ban_List" ? Visibility.Visible : Visibility.Collapsed;
+            }
         }
 
         private void AddPlayer(string json)
@@ -582,12 +720,6 @@ namespace MurkysRustBoot
             btn_Kill_Player.Visibility = Visibility.Collapsed;
         }
 
-        ObservableCollection<Player> _players;
-        public ObservableCollection<Player> Players
-        {
-            get { return _players; }
-            set { _players = value; }
-        }
 
         private void list_Players_LayoutUpdated(object sender, EventArgs e)
         {
@@ -596,7 +728,6 @@ namespace MurkysRustBoot
 
         private void list_Players_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            DisablePlayerActions();
             if (e.Source is ListBox)
             {
                 Player player = (sender as ListBox).SelectedItem as Player;
@@ -610,6 +741,10 @@ namespace MurkysRustBoot
                     ChatSessionPlayer = player;
                     EnablePlayerActions();
                 }
+            }
+            else
+            {
+                DisablePlayerActions();
             }
         }
 
@@ -638,6 +773,7 @@ namespace MurkysRustBoot
                 {
                     if (RCONConnected && RCONCheckConnection())
                     {
+                        BannedPlayers.Add(player);
                         RCONSendCommand("ban " + player.UserID + " \"" + player.DisplayName + "\"", true);
                         Players.Remove(player);
                     }
@@ -1211,12 +1347,12 @@ namespace MurkysRustBoot
                 RCONInitConnect();
                 RunUserEvents();
             }
-            if (lastLine.Contains("Couldn't Start Server."))
+            if (lastLine.Contains("Couldn't Start Server.") || lastLine.Contains("IOException: Sharing violation on path"))
             {
                 serverProcess.CloseMainWindow();
-                MessageBox.Show("Couldn't Start Server. Ensure that port " +
+                MessageBox.Show("Couldn't Start Server.\nEnsure that port " +
                     Properties.Settings.Default.Serverport +
-                    " is not in use by instance or another application.");
+                    " is not in use by another server instance or another application.\nEnsure that another server instance is not using the same server path.");
                 SwitchWindowLayout(ServerState.STOPPED);
                 try
                 {
@@ -1284,7 +1420,7 @@ namespace MurkysRustBoot
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Ops! Errormessage:\n" + ex.Message + "\n\nPlease report back to author: post@dan-levi.no");
+                Console.WriteLine("Ops! [UpdateLog]:\n" + ex.Message + "\n\nPlease report back to author: post@dan-levi.no");
             }
         }
 
@@ -1603,7 +1739,7 @@ namespace MurkysRustBoot
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Ops! Errormessage:\n" + ex.Message + "\n\nPlease report back to author: post@dan-levi.no");
+                Console.WriteLine("Ops! [StartServerThread]:\n" + ex.Message + "\n\nPlease report back to author: post@dan-levi.no");
 
             }
         }
@@ -1817,7 +1953,7 @@ namespace MurkysRustBoot
                 if (selectedTab.Header.ToString() == "Plugins")
                 {
                     btn_DeletePlugins.Visibility = Visibility.Visible;
-                    stack_Btns_Settings_Lower.Margin = new Thickness(0, 0, 0, -40);
+                    dock_Btns_Settings_Lower.Margin = new Thickness(0, 0, 0, -40);
                     if (e.Source is TabControl)
                     {
                         e.Handled = true;
@@ -1827,7 +1963,7 @@ namespace MurkysRustBoot
                 else
                 {
                     btn_DeletePlugins.Visibility = Visibility.Collapsed;
-                    stack_Btns_Settings_Lower.Margin = new Thickness(0, 0, 0, 0);
+                    dock_Btns_Settings_Lower.Margin = new Thickness(0, 0, 0, 0);
                 }
                 if (selectedTab.Header.ToString() == "Events")
                 {
@@ -1908,9 +2044,13 @@ namespace MurkysRustBoot
 
 
 
+
+
+
+
         #endregion
 
-        
+
     }
 
     public static class ExtensionMethods
